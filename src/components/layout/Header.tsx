@@ -12,7 +12,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
       <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
         <MenuIcon className="h-5 w-5" />
       </Button>
-      <div className="font-bold text-xl text-primary">Aorus INC</div>
+      <div className="font-bold text-xl text-primary">Aurum INC</div>
     </header>
   );
 };

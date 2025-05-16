@@ -66,7 +66,7 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
         <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
           <MenuIcon className="h-5 w-5" />
         </Button>
-        <div className="font-bold text-xl text-primary">Aorus INC</div>
+        <div className="font-bold text-xl text-primary">Aurum INC</div>
       </div>
       
       <div className="flex items-center space-x-4">
@@ -109,7 +109,7 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer text-center text-primary">
-                  Ver todas las notificaciones
+                  <Link to="/notifications">Ver todas las notificaciones</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

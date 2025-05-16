@@ -35,8 +35,10 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
     { id: "calendar", label: "Calendario", icon: CalendarIcon, path: "/calendar", roles: ["estudiante", "profesor", "admin"] },
     { id: "assignments", label: "Tareas", icon: FileTextIcon, path: "/assignments", roles: ["estudiante", "profesor"] },
     { id: "messages", label: "Mensajes", icon: MessageSquareIcon, path: "/forum", roles: ["estudiante", "profesor", "admin"] },
-    { id: "grades", label: "Calificaciones", icon: GraduationCapIcon, path: "/grades", roles: ["estudiante"] },
+    { id: "grades", label: "Calificaciones", icon: GraduationCapIcon, path: "/grades", roles: ["estudiante", "profesor", "admin"] },
     { id: "students", label: "Estudiantes", icon: UsersIcon, path: "/students", roles: ["profesor", "admin"] },
+    { id: "manage-courses", label: "Gestionar Cursos", icon: BookIcon, path: "/manage-courses", roles: ["admin"] },
+    { id: "manage-users", label: "Gestionar Usuarios", icon: UsersIcon, path: "/new-user", roles: ["admin"] },
   ];
 
   const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole));
@@ -82,8 +84,7 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
         <div className="px-3 py-4">
           {(!isMobile || open) && (
             <div className="mb-6 text-center">
-              <h3 className="font-semibold text-lg text-primary mb-1">Aorus INC</h3>
-              <p className="text-xs text-muted-foreground">Sistema de Aprendizaje</p>
+              <h3 className="font-semibold text-lg text-primary mb-1">Aurum INC</h3>
             </div>
           )}
           <nav className="space-y-1">
