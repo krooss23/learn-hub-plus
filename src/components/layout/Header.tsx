@@ -1,116 +1,18 @@
 
 import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BellIcon, MenuIcon, UserIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { MenuIcon } from "lucide-react";
 
 interface HeaderProps {
   toggleSidebar: () => void;
 }
 
 const Header = ({ toggleSidebar }: HeaderProps) => {
-  // Mock user data - in a real app this would come from auth context
-  const user = {
-    name: "Miguel Rodríguez",
-    role: "Estudiante",
-    avatar: "", // URL would go here
-    initials: "MR"
-  };
-
-  // Mock notifications
-  const notificationCount = 3;
-
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sticky top-0 z-10">
-      <div className="flex items-center">
-        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
-          <MenuIcon className="h-5 w-5" />
-        </Button>
-        <div className="font-bold text-xl text-kampus-primary">KampusPlus</div>
-      </div>
-      
-      <div className="flex items-center space-x-4">
-        {/* Notifications */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <BellIcon className="h-5 w-5" />
-              {notificationCount > 0 && (
-                <Badge 
-                  className="absolute -top-1 -right-1 px-1.5 h-5 bg-kampus-accent"
-                >
-                  {notificationCount}
-                </Badge>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-72">
-            <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
-              <div className="flex flex-col space-y-1">
-                <span className="font-medium">Nueva tarea asignada</span>
-                <span className="text-sm text-muted-foreground">Matemáticas - Entrega: 25/05/2025</span>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              <div className="flex flex-col space-y-1">
-                <span className="font-medium">Nuevo mensaje en el foro</span>
-                <span className="text-sm text-muted-foreground">Física - Tema: Leyes de Newton</span>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              <div className="flex flex-col space-y-1">
-                <span className="font-medium">Calificación publicada</span>
-                <span className="text-sm text-muted-foreground">Historial - Examen parcial</span>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-center text-kampus-primary">
-              Ver todas las notificaciones
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        
-        {/* User profile */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar>
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="bg-kampus-primary text-white">
-                  {user.initials}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <span>{user.name}</span>
-                <span className="text-xs text-muted-foreground">{user.role}</span>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
-              <UserIcon className="h-4 w-4 mr-2" />
-              Perfil
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-red-500">
-              Cerrar Sesión
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+    <header className="h-16 bg-white border-b border-gray-200 flex items-center px-4 sticky top-0 z-10">
+      <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-2">
+        <MenuIcon className="h-5 w-5" />
+      </Button>
+      <div className="font-bold text-xl text-primary">Aorus INC</div>
     </header>
   );
 };

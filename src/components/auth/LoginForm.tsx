@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { loginUser } from "@/lib/auth";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -13,21 +15,36 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate login process
+    // Intento de inicio de sesión con nuestro sistema simulado
     setTimeout(() => {
-      console.log("Login attempt:", { email, password });
+      const user = loginUser(email, password);
+      
+      if (user) {
+        console.log("Login successful:", { email, role: user.role });
+        toast({
+          title: "Inicio de sesión exitoso",
+          description: `Bienvenido a Aorus INC, ${user.name}`,
+        });
+        
+        // Redirección basada en el rol
+        navigate("/dashboard");
+      } else {
+        console.log("Login failed:", { email });
+        toast({
+          title: "Error de inicio de sesión",
+          description: "Email o contraseña incorrectos",
+          variant: "destructive",
+        });
+      }
+      
       setIsLoading(false);
-      toast({
-        title: "Inicio de sesión exitoso",
-        description: "Bienvenido a KampusPlus",
-      });
-      // Redirect would happen here in a real app
-    }, 1500);
+    }, 1000);
   };
 
   return (
@@ -82,24 +99,32 @@ const LoginForm = () => {
             </div>
           </div>
           
+          <div className="text-sm text-right">
+            <a href="#" className="text-primary hover:underline">
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
+          
           <Button 
             type="submit" 
-            className="w-full bg-kampus-primary hover:bg-blue-600"
+            className="w-full bg-primary hover:bg-primary/90"
             disabled={isLoading}
           >
             {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
           </Button>
+          
+          <div className="text-xs text-center text-muted-foreground mt-4">
+            <p>Credenciales de prueba:</p>
+            <p>Admin: admin@aorusinc.com / admin123</p>
+            <p>Profesor: profesor@aorusinc.com / profesor123</p>
+            <p>Estudiante: estudiante@aorusinc.com / estudiante123</p>
+          </div>
         </form>
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
         <div className="text-sm text-center">
-          <a href="#" className="text-kampus-primary hover:underline">
-            ¿Olvidaste tu contraseña?
-          </a>
-        </div>
-        <div className="text-sm text-center">
           ¿No tienes una cuenta?{" "}
-          <a href="#" className="text-kampus-primary hover:underline">
+          <a href="/register" className="text-primary hover:underline">
             Regístrate
           </a>
         </div>

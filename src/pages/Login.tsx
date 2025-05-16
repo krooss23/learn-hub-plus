@@ -1,5 +1,4 @@
 
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import LoginForm from "@/components/auth/LoginForm";
 
@@ -9,8 +8,8 @@ const Login = () => {
       {/* Simple header */}
       <header className="bg-white py-4 border-b">
         <div className="container mx-auto px-4">
-          <Link to="/" className="text-2xl font-bold text-kampus-primary">
-            KampusPlus
+          <Link to="/" className="text-2xl font-bold text-primary">
+            Aorus INC
           </Link>
         </div>
       </header>
@@ -23,11 +22,11 @@ const Login = () => {
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>
               Al iniciar sesión, aceptas nuestros{" "}
-              <a href="#" className="text-kampus-primary hover:underline">
+              <a href="#" className="text-primary hover:underline">
                 Términos de Servicio
               </a>{" "}
               y{" "}
-              <a href="#" className="text-kampus-primary hover:underline">
+              <a href="#" className="text-primary hover:underline">
                 Política de Privacidad
               </a>
             </p>
@@ -38,7 +37,7 @@ const Login = () => {
       {/* Footer */}
       <footer className="py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 KampusPlus. Todos los derechos reservados.</p>
+          <p>&copy; 2025 Aorus INC. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>

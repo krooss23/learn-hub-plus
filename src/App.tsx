@@ -12,6 +12,7 @@ import Courses from "./pages/Courses";
 import CreateCourse from "./pages/CreateCourse";
 import Forum from "./pages/Forum";
 import Assignments from "./pages/Assignments";
+import Calendar from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/courses/create" element={<CreateCourse />} />
           <Route path="/forum" element={<Forum />} />
           <Route path="/assignments" element={<Assignments />} />
+          <Route path="/calendar" element={<Calendar />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
+import { getCurrentUser } from "@/lib/auth";
+import { Link, useLocation } from "react-router-dom";
 
 interface SidebarProps {
   open: boolean;
@@ -21,25 +23,25 @@ interface SidebarProps {
 
 const Sidebar = ({ open, setOpen }: SidebarProps) => {
   const isMobile = useIsMobile();
-  const [activeItem, setActiveItem] = useState("home");
-
-  // Mock user role - would come from auth context in a real app
-  const userRole = "estudiante"; // or "profesor" or "admin"
+  const user = getCurrentUser();
+  const userRole = user?.role || "estudiante";
+  const location = useLocation();
+  
+  const isActive = (path: string) => location.pathname === path;
 
   const menuItems = [
-    { id: "home", label: "Inicio", icon: HomeIcon, roles: ["estudiante", "profesor", "admin"] },
-    { id: "courses", label: "Mis Cursos", icon: BookIcon, roles: ["estudiante", "profesor", "admin"] },
-    { id: "calendar", label: "Calendario", icon: CalendarIcon, roles: ["estudiante", "profesor", "admin"] },
-    { id: "assignments", label: "Tareas", icon: FileTextIcon, roles: ["estudiante", "profesor"] },
-    { id: "messages", label: "Mensajes", icon: MessageSquareIcon, roles: ["estudiante", "profesor", "admin"] },
-    { id: "grades", label: "Calificaciones", icon: GraduationCapIcon, roles: ["estudiante"] },
-    { id: "students", label: "Estudiantes", icon: UsersIcon, roles: ["profesor", "admin"] },
+    { id: "home", label: "Inicio", icon: HomeIcon, path: "/dashboard", roles: ["estudiante", "profesor", "admin"] },
+    { id: "courses", label: "Mis Cursos", icon: BookIcon, path: "/courses", roles: ["estudiante", "profesor", "admin"] },
+    { id: "calendar", label: "Calendario", icon: CalendarIcon, path: "/calendar", roles: ["estudiante", "profesor", "admin"] },
+    { id: "assignments", label: "Tareas", icon: FileTextIcon, path: "/assignments", roles: ["estudiante", "profesor"] },
+    { id: "messages", label: "Mensajes", icon: MessageSquareIcon, path: "/forum", roles: ["estudiante", "profesor", "admin"] },
+    { id: "grades", label: "Calificaciones", icon: GraduationCapIcon, path: "/grades", roles: ["estudiante"] },
+    { id: "students", label: "Estudiantes", icon: UsersIcon, path: "/students", roles: ["profesor", "admin"] },
   ];
 
   const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole));
 
-  const handleItemClick = (id: string) => {
-    setActiveItem(id);
+  const handleItemClick = () => {
     if (isMobile) {
       setOpen(false);
     }
@@ -78,23 +80,30 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
         )}
         
         <div className="px-3 py-4">
+          {(!isMobile || open) && (
+            <div className="mb-6 text-center">
+              <h3 className="font-semibold text-lg text-primary mb-1">Aorus INC</h3>
+              <p className="text-xs text-muted-foreground">Sistema de Aprendizaje</p>
+            </div>
+          )}
           <nav className="space-y-1">
             {filteredMenuItems.map((item) => (
-              <Button
-                key={item.id}
-                variant="ghost"
-                className={cn(
-                  "w-full justify-start mb-1",
-                  !open && !isMobile ? "px-2" : "px-3",
-                  activeItem === item.id
-                    ? "bg-kampus-primary/10 text-kampus-primary font-medium"
-                    : "hover:bg-muted"
-                )}
-                onClick={() => handleItemClick(item.id)}
-              >
-                <item.icon className={cn("h-5 w-5", open ? "mr-2" : "mx-auto")} />
-                {(open || isMobile) && <span>{item.label}</span>}
-              </Button>
+              <Link to={item.path} key={item.id}>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "w-full justify-start mb-1",
+                    !open && !isMobile ? "px-2" : "px-3",
+                    isActive(item.path)
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "hover:bg-muted"
+                  )}
+                  onClick={handleItemClick}
+                >
+                  <item.icon className={cn("h-5 w-5", open ? "mr-2" : "mx-auto")} />
+                  {(open || isMobile) && <span>{item.label}</span>}
+                </Button>
+              </Link>
             ))}
           </nav>
         </div>
