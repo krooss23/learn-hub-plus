@@ -174,7 +174,7 @@ const Students = () => {
                 <SelectValue placeholder="País" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los países</SelectItem>
+                <SelectItem value="todos-paises">Todos los países</SelectItem>
                 {countries.map(country => (
                   <SelectItem key={country} value={country}>{country}</SelectItem>
                 ))}
@@ -192,7 +192,7 @@ const Students = () => {
                 <SelectValue placeholder="Región" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las regiones</SelectItem>
+                <SelectItem value="todas-regiones">Todas las regiones</SelectItem>
                 {regions.map(region => (
                   <SelectItem key={region} value={region}>{region}</SelectItem>
                 ))}
@@ -210,7 +210,7 @@ const Students = () => {
                 <SelectValue placeholder="Ciudad" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las ciudades</SelectItem>
+                <SelectItem value="todas-ciudades">Todas las ciudades</SelectItem>
                 {cities.map(city => (
                   <SelectItem key={city} value={city}>{city}</SelectItem>
                 ))}
@@ -228,7 +228,7 @@ const Students = () => {
                 <SelectValue placeholder="Concesionario" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los concesionarios</SelectItem>
+                <SelectItem value="todos-concesionarios">Todos los concesionarios</SelectItem>
                 {dealerships.map(dealership => (
                   <SelectItem key={dealership} value={dealership}>{dealership}</SelectItem>
                 ))}
@@ -246,7 +246,7 @@ const Students = () => {
                 <SelectValue placeholder="Empresa" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las empresas</SelectItem>
+                <SelectItem value="todas-empresas">Todas las empresas</SelectItem>
                 {companies.map(company => (
                   <SelectItem key={company} value={company}>{company}</SelectItem>
                 ))}
@@ -264,7 +264,7 @@ const Students = () => {
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los tipos</SelectItem>
+                <SelectItem value="todos-tipos">Todos los tipos</SelectItem>
                 <SelectItem value="tecnico">Técnico</SelectItem>
                 <SelectItem value="asesor">Asesor</SelectItem>
                 <SelectItem value="ventas">Ventas</SelectItem>
