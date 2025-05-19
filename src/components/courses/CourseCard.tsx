@@ -15,6 +15,13 @@ interface CourseCardProps {
     students?: number;
     startDate?: string;
     schedule?: string;
+    // Adding the filter fields
+    pais?: string;
+    region?: string;
+    ciudad?: string;
+    concesionario?: string;
+    empresa?: string;
+    tipo?: string;
   };
   role: "estudiante" | "profesor" | "admin";
 }
