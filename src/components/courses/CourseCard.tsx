@@ -46,7 +46,7 @@ const CourseCard = ({ course, role }: CourseCardProps) => {
           alt={title}
           className="w-full h-full object-cover"
         />
-        <Badge className="absolute top-2 right-2 bg-kampus-primary">
+        <Badge className="absolute top-2 right-2 bg-primary">
           {category}
         </Badge>
       </div>

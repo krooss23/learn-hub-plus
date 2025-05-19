@@ -146,7 +146,7 @@ const Courses = () => {
             onClick={() => handleRoleChange("estudiante")}
             className={`px-3 py-1 rounded text-sm ${
               userRole === "estudiante"
-                ? "bg-kampus-primary text-white"
+                ? "bg-primary text-white"
                 : "bg-gray-200 hover:bg-gray-300"
             }`}
           >
@@ -156,7 +156,7 @@ const Courses = () => {
             onClick={() => handleRoleChange("profesor")}
             className={`px-3 py-1 rounded text-sm ${
               userRole === "profesor"
-                ? "bg-kampus-primary text-white"
+                ? "bg-primary text-white"
                 : "bg-gray-200 hover:bg-gray-300"
             }`}
           >
@@ -170,7 +170,7 @@ const Courses = () => {
         
         {userRole === "profesor" && (
           <Link to="/courses/create">
-            <Button className="bg-kampus-primary hover:bg-blue-600">
+            <Button className="bg-primary hover:bg-primary/90">
               <PlusIcon className="h-4 w-4 mr-2" />
               Crear Nuevo Curso
             </Button>

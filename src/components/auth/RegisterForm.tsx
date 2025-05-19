@@ -49,7 +49,7 @@ const RegisterForm = () => {
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">Crear Cuenta</CardTitle>
         <CardDescription className="text-center">
-          Regístrate para acceder a KampusPlus
+          Regístrate para acceder a Aurum INC
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -139,7 +139,7 @@ const RegisterForm = () => {
           
           <Button 
             type="submit" 
-            className="w-full bg-kampus-primary hover:bg-blue-600"
+            className="w-full bg-primary hover:bg-primary/90"
             disabled={isLoading}
           >
             {isLoading ? "Creando cuenta..." : "Registrarse"}
@@ -149,7 +149,7 @@ const RegisterForm = () => {
       <CardFooter className="flex justify-center">
         <div className="text-sm text-center">
           ¿Ya tienes una cuenta?{" "}
-          <a href="#" className="text-kampus-primary hover:underline">
+          <a href="/login" className="text-primary hover:underline">
             Iniciar Sesión
           </a>
         </div>

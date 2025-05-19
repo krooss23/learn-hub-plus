@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { BookOpenIcon, GraduationCapIcon, MessageSquareIcon, UsersIcon } from "lucide-react";
-import MainLayout from "@/components/layout/MainLayout";
 import { getCurrentUser } from "@/lib/auth";
 
 const Index = () => {
@@ -18,7 +17,7 @@ const Index = () => {
       {/* Header */}
       <header className="bg-white py-4 border-b">
         <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-primary">Aorus INC</div>
+          <div className="text-2xl font-bold text-primary">Aurum INC</div>
           <div className="space-x-2">
             <Link to="/login">
               <Button variant="outline">Iniciar Sesión</Button>
@@ -54,7 +53,7 @@ const Index = () => {
           <div className="md:w-1/2 flex justify-center">
             <img 
               src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
-              alt="Estudiantes usando Aorus INC" 
+              alt="Estudiantes usando Aurum INC" 
               className="rounded-lg shadow-xl max-w-full h-auto"
             />
           </div>
@@ -114,7 +113,7 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">¿Listo para Transformar la Experiencia Educativa?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto text-blue-100">
-            Únete a las instituciones educativas que ya han mejorado su gestión académica con Aorus INC.
+            Únete a las instituciones educativas que ya han mejorado su gestión académica con Aurum INC.
           </p>
           <Link to="/register">
             <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
@@ -129,7 +128,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4">Aorus INC</h3>
+              <h3 className="text-xl font-bold mb-4">Aurum INC</h3>
               <p className="text-gray-400">
                 La plataforma educativa integral para instituciones modernas.
               </p>
@@ -157,7 +156,7 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Contacto</h4>
               <ul className="space-y-2 text-gray-400">
-                <li>info@aorusinc.com</li>
+                <li>info@auruminc.com</li>
                 <li>+1 (555) 123-4567</li>
                 <li>Ciudad de México, México</li>
               </ul>
@@ -165,7 +164,7 @@ const Index = () => {
           </div>
           
           <div className="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
-            <p>&copy; 2025 Aorus INC. Todos los derechos reservados.</p>
+            <p>&copy; 2025 Aurum INC. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

@@ -199,7 +199,7 @@ const CreateCourseForm = () => {
           <div className="pt-4">
             <Button 
               type="submit" 
-              className="w-full bg-kampus-primary hover:bg-blue-600"
+              className="w-full bg-primary hover:bg-primary/90"
               disabled={isLoading}
             >
               {isLoading ? "Creando curso..." : "Crear Curso"}
