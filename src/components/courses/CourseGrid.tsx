@@ -7,7 +7,7 @@ interface Course {
   instructor: string;
   coverImage: string;
   category: string;
-  progress?: number; // Haciendo progress opcional
+  progress?: number; // Progress is optional
   students?: number;
   startDate?: string;
   schedule?: string;
