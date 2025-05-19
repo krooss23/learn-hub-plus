@@ -12,12 +12,12 @@ import { Badge } from "@/components/ui/badge";
 const Students = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
-    pais: "",
-    region: "",
-    ciudad: "",
-    concesionario: "",
-    empresa: "",
-    tipo: "",
+    pais: "all",
+    region: "all",
+    ciudad: "all",
+    concesionario: "all",
+    empresa: "all",
+    tipo: "all",
   });
 
   // Mock data for students
@@ -91,12 +91,12 @@ const Students = () => {
       student.email.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesFilters = 
-      (filters.pais ? student.pais === filters.pais : true) &&
-      (filters.region ? student.region === filters.region : true) &&
-      (filters.ciudad ? student.ciudad === filters.ciudad : true) &&
-      (filters.concesionario ? student.concesionario === filters.concesionario : true) &&
-      (filters.empresa ? student.empresa === filters.empresa : true) &&
-      (filters.tipo ? student.tipo === filters.tipo : true);
+      (filters.pais === "all" ? true : student.pais === filters.pais) &&
+      (filters.region === "all" ? true : student.region === filters.region) &&
+      (filters.ciudad === "all" ? true : student.ciudad === filters.ciudad) &&
+      (filters.concesionario === "all" ? true : student.concesionario === filters.concesionario) &&
+      (filters.empresa === "all" ? true : student.empresa === filters.empresa) &&
+      (filters.tipo === "all" ? true : student.tipo === filters.tipo);
     
     return matchesSearch && matchesFilters;
   });
@@ -127,12 +127,12 @@ const Students = () => {
 
   const resetFilters = () => {
     setFilters({
-      pais: "",
-      region: "",
-      ciudad: "",
-      concesionario: "",
-      empresa: "",
-      tipo: "",
+      pais: "all",
+      region: "all",
+      ciudad: "all",
+      concesionario: "all",
+      empresa: "all",
+      tipo: "all",
     });
     setSearchQuery("");
   };
@@ -174,7 +174,7 @@ const Students = () => {
                 <SelectValue placeholder="País" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los países</SelectItem>
+                <SelectItem value="all">Todos los países</SelectItem>
                 {countries.map(country => (
                   <SelectItem key={country} value={country}>{country}</SelectItem>
                 ))}
@@ -192,7 +192,7 @@ const Students = () => {
                 <SelectValue placeholder="Región" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las regiones</SelectItem>
+                <SelectItem value="all">Todas las regiones</SelectItem>
                 {regions.map(region => (
                   <SelectItem key={region} value={region}>{region}</SelectItem>
                 ))}
@@ -210,7 +210,7 @@ const Students = () => {
                 <SelectValue placeholder="Ciudad" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las ciudades</SelectItem>
+                <SelectItem value="all">Todas las ciudades</SelectItem>
                 {cities.map(city => (
                   <SelectItem key={city} value={city}>{city}</SelectItem>
                 ))}
@@ -228,7 +228,7 @@ const Students = () => {
                 <SelectValue placeholder="Concesionario" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los concesionarios</SelectItem>
+                <SelectItem value="all">Todos los concesionarios</SelectItem>
                 {dealerships.map(dealership => (
                   <SelectItem key={dealership} value={dealership}>{dealership}</SelectItem>
                 ))}
@@ -246,7 +246,7 @@ const Students = () => {
                 <SelectValue placeholder="Empresa" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las empresas</SelectItem>
+                <SelectItem value="all">Todas las empresas</SelectItem>
                 {companies.map(company => (
                   <SelectItem key={company} value={company}>{company}</SelectItem>
                 ))}
@@ -264,7 +264,7 @@ const Students = () => {
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los tipos</SelectItem>
+                <SelectItem value="all">Todos los tipos</SelectItem>
                 <SelectItem value="tecnico">Técnico</SelectItem>
                 <SelectItem value="asesor">Asesor</SelectItem>
                 <SelectItem value="ventas">Ventas</SelectItem>
