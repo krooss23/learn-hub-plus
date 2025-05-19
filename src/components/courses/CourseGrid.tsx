@@ -7,16 +7,10 @@ interface Course {
   instructor: string;
   coverImage: string;
   category: string;
-  progress?: number; // Progress is optional
+  progress?: number;
   students?: number;
   startDate?: string;
   schedule?: string;
-  pais?: string;
-  region?: string;
-  ciudad?: string;
-  concesionario?: string;
-  empresa?: string;
-  tipo?: string;
 }
 
 interface CourseGridProps {
