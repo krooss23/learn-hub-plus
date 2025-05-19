@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { BookOpenIcon, GraduationCapIcon, MessageSquareIcon, UsersIcon } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -9,7 +9,7 @@ const Index = () => {
   
   // Si el usuario ya está autenticado, redirige al dashboard
   if (user) {
-    return <Link to="/dashboard" />;
+    return <Navigate to="/dashboard" />;
   }
   
   return (
