@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +19,7 @@ const RegisterForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
       toast({
         title: "Las contraseñas no coinciden",
@@ -29,19 +28,36 @@ const RegisterForm = () => {
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
-    // Simulate registration process
-    setTimeout(() => {
-      console.log("Register attempt:", { name, email, password, role });
-      setIsLoading(false);
-      toast({
-        title: "Registro exitoso",
-        description: "Tu cuenta ha sido creada correctamente",
+
+    fetch("http://localhost:5214/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nombre: name,
+        email: email,
+        password: password,
+        rol: role,
+      }),
+    })
+      .then(res => {
+        setIsLoading(false);
+        if (!res.ok) throw new Error("Error");
+        toast({
+          title: "Registro exitoso",
+          description: "Tu cuenta ha sido creada correctamente",
+        });
+        // Aquí podrías redirigir al login si quieres
+      })
+      .catch(() => {
+        setIsLoading(false);
+        toast({
+          title: "Error",
+          description: "No se pudo crear el usuario",
+          variant: "destructive",
+        });
       });
-      // Redirect would happen here in a real app
-    }, 1500);
   };
 
   return (
@@ -90,6 +106,7 @@ const RegisterForm = () => {
               <SelectContent>
                 <SelectItem value="estudiante">Estudiante</SelectItem>
                 <SelectItem value="profesor">Profesor</SelectItem>
+                <SelectItem value="profesor">Admin</SelectItem>
               </SelectContent>
             </Select>
           </div>

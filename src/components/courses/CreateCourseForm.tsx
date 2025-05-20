@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { CalendarIcon, UploadIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CreateCourseForm = () => {
   const [title, setTitle] = useState("");
@@ -19,6 +19,7 @@ const CreateCourseForm = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -36,7 +37,7 @@ const CreateCourseForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title || !description || !category) {
       toast({
         title: "Campos incompletos",
@@ -45,35 +46,40 @@ const CreateCourseForm = () => {
       });
       return;
     }
-    
+
     setIsLoading(true);
-    
-    // Simulate course creation process
-    setTimeout(() => {
-      console.log("Create course:", { 
-        title, 
-        description, 
-        category,
-        startDate,
-        schedule,
-        imageFile
+
+    fetch("http://localhost:5214/api/courses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nombre: title,
+        descripcion: description,
+        categoria: category,
+        fechaInicio: startDate,
+        horario: schedule,
+        profesor: "Nombre del profesor", // <-- Aquí agregas el campo
+        // imagenUrl: aquí puedes poner la URL si implementas subida de imágenes
+      }),
+    })
+      .then(res => {
+        setIsLoading(false);
+        if (!res.ok) throw new Error("Error al crear el curso");
+        toast({
+          title: "Curso creado",
+          description: "El curso ha sido creado exitosamente",
+        });
+        // Redirige a la lista de cursos
+        navigate("/courses");
+      })
+      .catch(() => {
+        setIsLoading(false);
+        toast({
+          title: "Error",
+          description: "No se pudo crear el curso",
+          variant: "destructive",
+        });
       });
-      
-      setIsLoading(false);
-      toast({
-        title: "Curso creado",
-        description: "El curso ha sido creado exitosamente",
-      });
-      
-      // Reset form
-      setTitle("");
-      setDescription("");
-      setCategory("");
-      setStartDate("");
-      setSchedule("");
-      setImageFile(null);
-      setImagePreview(null);
-    }, 1500);
   };
 
   return (

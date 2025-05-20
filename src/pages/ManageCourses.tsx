@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -188,7 +187,6 @@ const ManageCourses = () => {
                 <SelectValue placeholder="País" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los países</SelectItem>
                 {countries.map(country => (
                   <SelectItem key={country} value={country}>{country}</SelectItem>
                 ))}
@@ -206,7 +204,6 @@ const ManageCourses = () => {
                 <SelectValue placeholder="Región" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las regiones</SelectItem>
                 {regions.map(region => (
                   <SelectItem key={region} value={region}>{region}</SelectItem>
                 ))}
@@ -224,7 +221,6 @@ const ManageCourses = () => {
                 <SelectValue placeholder="Ciudad" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las ciudades</SelectItem>
                 {cities.map(city => (
                   <SelectItem key={city} value={city}>{city}</SelectItem>
                 ))}
@@ -242,7 +238,6 @@ const ManageCourses = () => {
                 <SelectValue placeholder="Concesionario" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los concesionarios</SelectItem>
                 {dealerships.map(dealership => (
                   <SelectItem key={dealership} value={dealership}>{dealership}</SelectItem>
                 ))}
@@ -260,7 +255,6 @@ const ManageCourses = () => {
                 <SelectValue placeholder="Empresa" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las empresas</SelectItem>
                 {companies.map(company => (
                   <SelectItem key={company} value={company}>{company}</SelectItem>
                 ))}
@@ -278,7 +272,7 @@ const ManageCourses = () => {
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los tipos</SelectItem>
+                <SelectItem value="all">Todos los tipos</SelectItem>
                 <SelectItem value="tecnico">Técnico</SelectItem>
                 <SelectItem value="asesor">Asesor</SelectItem>
                 <SelectItem value="ventas">Ventas</SelectItem>

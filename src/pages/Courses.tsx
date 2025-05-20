@@ -1,4 +1,3 @@
-
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,127 +6,36 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import { PlusIcon, SearchIcon } from "lucide-react";
 import CourseGrid from "@/components/courses/CourseGrid";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Courses = () => {
-  // For demonstration purposes, we'll use state to toggle between roles
   const [userRole, setUserRole] = useState<"estudiante" | "profesor" | "admin">("estudiante");
-  
-  // Mock data for courses
-  const studentCourses = [
-    {
-      id: "1",
-      title: "Matemáticas Avanzadas",
-      instructor: "Carlos Mendoza",
-      coverImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Matemáticas",
-      progress: 75,
-      startDate: "10/05/2025",
-      schedule: "Lun, Mié 15:00-17:00"
-    },
-    {
-      id: "2",
-      title: "Historia Universal",
-      instructor: "Ana García",
-      coverImage: "https://images.unsplash.com/photo-1447069387593-a5de0862481e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-      category: "Historia",
-      progress: 40,
-      startDate: "05/05/2025",
-      schedule: "Mar, Jue 10:00-12:00"
-    },
-    {
-      id: "3",
-      title: "Programación en Python",
-      instructor: "Ricardo Torres",
-      coverImage: "https://images.unsplash.com/photo-1526379879527-8559ecfcaec0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80",
-      category: "Tecnología",
-      progress: 60,
-      startDate: "15/05/2025",
-      schedule: "Vie 14:00-18:00"
-    },
-    {
-      id: "4",
-      title: "Literatura Hispanoamericana",
-      instructor: "Elena Martínez",
-      coverImage: "https://images.unsplash.com/photo-1456513080867-f24f12e94d55?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80",
-      category: "Literatura",
-      progress: 25,
-      startDate: "20/05/2025",
-      schedule: "Jue 15:00-18:00"
-    }
-  ];
-  
-  const teacherCourses = [
-    {
-      id: "1",
-      title: "Matemáticas Avanzadas",
-      instructor: "Prof. Juan Pérez",
-      coverImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Matemáticas",
-      students: 28,
-      startDate: "10/05/2025",
-      schedule: "Lun, Mié 15:00-17:00"
-    },
-    {
-      id: "2",
-      title: "Álgebra Lineal",
-      instructor: "Prof. Juan Pérez",
-      coverImage: "https://images.unsplash.com/photo-1509228468518-180dd4864904?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Matemáticas",
-      students: 36,
-      startDate: "05/05/2025",
-      schedule: "Mar, Jue 10:00-12:00"
-    },
-    {
-      id: "3",
-      title: "Geometría Analítica",
-      instructor: "Prof. Juan Pérez",
-      coverImage: "https://images.unsplash.com/photo-1636466497217-26a5865ebd3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      category: "Matemáticas",
-      students: 22,
-      startDate: "15/05/2025",
-      schedule: "Vie 14:00-18:00"
-    }
-  ];
-  
-  const availableCourses = [
-    {
-      id: "5",
-      title: "Física I: Mecánica",
-      instructor: "Luis Ramírez",
-      coverImage: "https://images.unsplash.com/photo-1636466514704-5b34ee678227?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      category: "Ciencias",
-      startDate: "25/05/2025",
-      schedule: "Mar, Jue 13:00-15:00"
-    },
-    {
-      id: "6",
-      title: "Introducción a la Psicología",
-      instructor: "Marta González",
-      coverImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Psicología",
-      startDate: "01/06/2025",
-      schedule: "Lun, Mié 10:00-12:00"
-    },
-    {
-      id: "7",
-      title: "Inglés Avanzado",
-      instructor: "Daniel White",
-      coverImage: "https://images.unsplash.com/photo-1494809610410-160faaed4de0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-      category: "Idiomas",
-      startDate: "05/06/2025",
-      schedule: "Lun, Mié, Vie, 17:00-18:30"
-    },
-    {
-      id: "8",
-      title: "Economía para Principiantes",
-      instructor: "Sofía Herrera",
-      coverImage: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Economía",
-      startDate: "10/06/2025",
-      schedule: "Mar, Jue 09:00-11:00"
-    }
-  ];
+  const [courses, setCourses] = useState<any[]>([]);
+
+  // 1. Función para cargar cursos
+  const fetchCourses = () => {
+    fetch("http://localhost:5214/api/courses")
+      .then(res => res.json())
+      .then(data => {
+        // Mapea los datos del backend al formato del frontend
+        const mappedCourses = data.map((course: any) => ({
+          id: course.id,
+          title: course.nombre,
+          instructor: course.profesor,
+          coverImage: course.imagenUrl,
+          category: course.categoria,
+          startDate: course.fechaInicio,
+          schedule: course.horario,
+          // agrega otros campos si los necesitas
+        }));
+        setCourses(mappedCourses);
+      })
+      .catch(err => console.error(err));
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
   // For demonstration purposes, add buttons to switch between roles
   const handleRoleChange = (role: "estudiante" | "profesor" | "admin") => {
@@ -220,24 +128,7 @@ const Courses = () => {
         </div>
       </div>
       
-      {userRole === "estudiante" ? (
-        <Tabs defaultValue="enrolled">
-          <TabsList className="mb-6">
-            <TabsTrigger value="enrolled">Mis Cursos</TabsTrigger>
-            <TabsTrigger value="available">Disponibles</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="enrolled">
-            <CourseGrid courses={studentCourses} role="estudiante" />
-          </TabsContent>
-          
-          <TabsContent value="available">
-            <CourseGrid courses={availableCourses} role="estudiante" />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <CourseGrid courses={teacherCourses} role="profesor" />
-      )}
+      <CourseGrid courses={courses} role={userRole} />
     </MainLayout>
   );
 };

@@ -21,5 +21,14 @@ namespace backend_dotnet.Controllers
             var users = _context.Users.ToList();
             return Ok(users);
         }
+
+        [HttpPost]
+        public IActionResult CreateUser(User user)
+        {
+            // Aquí puedes agregar validaciones y encriptar la contraseña si lo deseas
+            _context.Users.Add(user);
+            _context.SaveChanges();
+            return Ok(user);
+        }
     }
 }
