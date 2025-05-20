@@ -45,7 +45,7 @@ const Index = () => {
                   Comenzar Ahora
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="text-white border-white hover:bg-white/10">
+              <Button variant="outline" size="lg" className="text-black border-white hover:bg-white/10">
                 Saber Más
               </Button>
             </div>
