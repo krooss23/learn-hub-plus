@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -43,22 +42,23 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
   
   const handleLogout = () => {
     logoutUser();
+    setUser(null); // <-- Esto fuerza el re-render y oculta el menú de usuario
     toast({
       title: "Sesión cerrada",
       description: "Has cerrado sesión correctamente",
     });
-    navigate("/");
+    navigate("/login"); // O usa "/" si prefieres ir al home
   };
   
   // Obtiene las iniciales del nombre de usuario
-  const getInitials = (name: string) => {
+  function getInitials(name?: string) {
+    if (!name || typeof name !== "string") return "";
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
-      .toUpperCase()
-      .substring(0, 2);
-  };
+      .toUpperCase();
+  }
 
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sticky top-0 z-10">

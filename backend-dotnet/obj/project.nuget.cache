@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "LmKN/XbcO3c=",
+  "dgSpecHash": "cS7/FTXanik=",
   "success": true,
   "projectFilePath": "C:\\Users\\deyso\\OneDrive\\Escritorio\\INC\\inc produ\\learn-hub-plus\\backend-dotnet\\backend-dotnet.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\deyso\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\deyso\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512",
     "C:\\Users\\deyso\\.nuget\\packages\\google.protobuf\\3.30.0\\google.protobuf.3.30.0.nupkg.sha512",
     "C:\\Users\\deyso\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

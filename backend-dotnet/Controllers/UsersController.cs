@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using backend_dotnet.Data;
 using backend_dotnet.Models;
+using BCrypt.Net;
 
 namespace backend_dotnet.Controllers
 {
@@ -25,7 +26,13 @@ namespace backend_dotnet.Controllers
         [HttpPost]
         public IActionResult CreateUser(User user)
         {
-            // Aquí puedes agregar validaciones y encriptar la contraseña si lo deseas
+            // Validación de email duplicado (opcional)
+            if (_context.Users.Any(u => u.Email == user.Email))
+                return BadRequest(new { message = "El email ya está registrado" });
+
+            // Cifrado de contraseña
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
             _context.Users.Add(user);
             _context.SaveChanges();
             return Ok(user);
@@ -36,7 +43,8 @@ namespace backend_dotnet.Controllers
         {
             var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
 
-            if (user == null || user.Password != request.Password)
+            // Verifica el usuario y la contraseña cifrada
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
                 return Unauthorized(new { message = "Credenciales incorrectas" });
             }

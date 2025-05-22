@@ -1,4 +1,3 @@
-
 // Sistema de autenticación simulado (temporal)
 // En el futuro, esto se reemplazará con una implementación MySQL
 
@@ -53,17 +52,14 @@ export const loginUser = (email: string, password: string): User | null => {
   return null;
 };
 
-export const getCurrentUser = (): User | null => {
-  const userData = localStorage.getItem('currentUser');
-  if (userData) {
-    return JSON.parse(userData);
-  }
-  return null;
-};
+export function getCurrentUser() {
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
+}
 
-export const logoutUser = (): void => {
-  localStorage.removeItem('currentUser');
-};
+export function logoutUser() {
+  localStorage.removeItem("user");
+}
 
 // Hook personalizado para usar en componentes que necesitan acceso al usuario actual
 export const useAuth = () => {

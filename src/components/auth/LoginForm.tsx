@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { loginUser } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
@@ -17,23 +15,43 @@ const LoginForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Intento de inicio de sesión con nuestro sistema simulado
-    setTimeout(() => {
-      const user = loginUser(email, password);
-      
-      if (user) {
-        console.log("Login successful:", { email, role: user.role });
+    try {
+      const response = await fetch('http://localhost:5214/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+
+      if (response.ok) {
+        const user = await response.json();
+        // Guarda el usuario en localStorage
+        localStorage.setItem("user", JSON.stringify(user));
+
+        console.log("Login successful:", { email, role: user.rol });
         toast({
           title: "Inicio de sesión exitoso",
-          description: `Bienvenido a Aorus INC, ${user.name}`,
+          description: `Bienvenido a Aorus INC, ${user.nombre}`,
         });
-        
+
         // Redirección basada en el rol
-        navigate("/dashboard");
+        if (user.rol === "admin") {
+          navigate("/admin-dashboard");
+        } else if (user.rol === "profesor") {
+          navigate("/profesor-dashboard");
+        } else if (user.rol === "estudiante") {
+          navigate("/estudiante-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         console.log("Login failed:", { email });
         toast({
@@ -42,9 +60,16 @@ const LoginForm = () => {
           variant: "destructive",
         });
       }
-      
+    } catch (error) {
+      console.error("Error during login:", error);
+      toast({
+        title: "Error de inicio de sesión",
+        description: "Ocurrió un error. Por favor, intenta nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
