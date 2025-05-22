@@ -16,6 +16,7 @@ const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const userRole = localStorage.getItem("userRole"); // O usa tu contexto de autenticación
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +107,7 @@ const RegisterForm = () => {
               <SelectContent>
                 <SelectItem value="estudiante">Estudiante</SelectItem>
                 <SelectItem value="profesor">Profesor</SelectItem>
-                <SelectItem value="profesor">Admin</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -30,5 +30,24 @@ namespace backend_dotnet.Controllers
             _context.SaveChanges();
             return Ok(user);
         }
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginRequest request)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+
+            if (user == null || user.Password != request.Password)
+            {
+                return Unauthorized(new { message = "Credenciales incorrectas" });
+            }
+
+            return Ok(new { user.Id, user.Nombre, user.Email, user.Rol });
+        }
+    }
+
+    public class LoginRequest
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }
