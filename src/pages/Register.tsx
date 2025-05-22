@@ -10,7 +10,7 @@ const Register = () => {
       <header className="bg-white py-4 border-b">
         <div className="container mx-auto px-4">
           <Link to="/" className="text-2xl font-bold text-kampus-primary">
-            KampusPlus
+            Aurum INC
           </Link>
         </div>
       </header>
@@ -20,27 +20,11 @@ const Register = () => {
         <div className="w-full max-w-md">
           <RegisterForm />
           
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>
-              Al registrarte, aceptas nuestros{" "}
-              <a href="#" className="text-kampus-primary hover:underline">
-                Términos de Servicio
-              </a>{" "}
-              y{" "}
-              <a href="#" className="text-kampus-primary hover:underline">
-                Política de Privacidad
-              </a>
-            </p>
-          </div>
+         
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="py-6">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 KampusPlus. Todos los derechos reservados.</p>
-        </div>
-      </footer>
+      
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -155,23 +156,11 @@ const RegisterForm = () => {
             />
           </div>
           
-          <Button 
-            type="submit" 
-            className="w-full bg-primary hover:bg-primary/90"
-            disabled={isLoading}
-          >
-            {isLoading ? "Creando cuenta..." : "Registrarse"}
+          <Button type="submit" className="w-full">
+            Crear Usuario
           </Button>
         </form>
       </CardContent>
-      <CardFooter className="flex justify-center">
-        <div className="text-sm text-center">
-          ¿Ya tienes una cuenta?{" "}
-          <a href="/login" className="text-primary hover:underline">
-            Iniciar Sesión
-          </a>
-        </div>
-      </CardFooter>
     </Card>
   );
 };

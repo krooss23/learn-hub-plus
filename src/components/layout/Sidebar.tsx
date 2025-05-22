@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { 
@@ -24,7 +23,7 @@ interface SidebarProps {
 const Sidebar = ({ open, setOpen }: SidebarProps) => {
   const isMobile = useIsMobile();
   const user = getCurrentUser();
-  const userRole = user?.role || "estudiante";
+  const userRole = user?.rol || "estudiante";
   const location = useLocation();
   
   const isActive = (path: string) => location.pathname === path;

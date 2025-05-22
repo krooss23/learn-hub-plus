@@ -47,7 +47,7 @@ const Navbar = ({ toggleSidebar }: NavbarProps) => {
       title: "Sesión cerrada",
       description: "Has cerrado sesión correctamente",
     });
-    navigate("/login"); // O usa "/" si prefieres ir al home
+    navigate("/"); // O usa "/" si prefieres ir al home o si es para el login "/login"
   };
   
   // Obtiene las iniciales del nombre de usuario
