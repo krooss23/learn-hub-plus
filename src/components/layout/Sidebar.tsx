@@ -38,7 +38,6 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
     { id: "students", label: "Estudiantes", icon: UsersIcon, path: "/students", roles: ["profesor", "admin"] },
     { id: "manage-courses", label: "Gestionar Cursos", icon: BookIcon, path: "/manage-courses", roles: ["admin"] },
     { id: "user-list", label: "Lista de Usuarios", icon: UsersIcon, path: "/usuarios", roles: ["admin"] },
-    { id: "manage-users", label: "Gestionar Usuarios", icon: UsersIcon, path: "/new-user", roles: ["admin"] },
   ];
 
   const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole));
