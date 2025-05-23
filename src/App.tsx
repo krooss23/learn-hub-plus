@@ -23,6 +23,7 @@ import Grades from "./pages/Grades";
 import Notifications from "./pages/Notifications";
 import AdminDashboard from './components/dashboard/AdminDashboard';
 import MainLayout from "./components/layout/MainLayout";
+import UsersList from "./pages/UserList";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,14 @@ const App = () => (
             element={
               <MainLayout>
                 <AdminDashboard />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/usuarios"
+            element={
+              <MainLayout>
+                <UsersList />
               </MainLayout>
             }
           />

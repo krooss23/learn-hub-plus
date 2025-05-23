@@ -51,6 +51,20 @@ namespace backend_dotnet.Controllers
 
             return Ok(new { user.Id, user.Nombre, user.Email, user.Rol });
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteUser(int id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado" });
+            }
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+            return Ok(new { message = "Usuario eliminado correctamente" });
+        }
     }
 
     public class LoginRequest

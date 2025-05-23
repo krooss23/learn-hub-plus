@@ -1,9 +1,9 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduationCapIcon, PlusIcon, UserIcon, UsersIcon, BookIcon } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
   // Mock statistics data
@@ -50,9 +50,11 @@ const AdminDashboard = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 className="text-2xl font-bold">Panel de Administración</h1>
         <div className="space-x-2">
-          <Button>
-            <PlusIcon className="h-4 w-4 mr-2" />
-            Nuevo Usuario
+          <Button asChild>
+            <Link to="/new-user">
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Nuevo Usuario
+            </Link>
           </Button>
           <Button variant="outline">
             <PlusIcon className="h-4 w-4 mr-2" />

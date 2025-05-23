@@ -138,22 +138,10 @@ const LoginForm = () => {
             {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
           </Button>
           
-          <div className="text-xs text-center text-muted-foreground mt-4">
-            <p>Credenciales de prueba:</p>
-            <p>Admin: admin@aorusinc.com / admin123</p>
-            <p>Profesor: profesor@aorusinc.com / profesor123</p>
-            <p>Estudiante: estudiante@aorusinc.com / estudiante123</p>
-          </div>
+          
         </form>
       </CardContent>
-      <CardFooter className="flex flex-col space-y-2">
-        <div className="text-sm text-center">
-          ¿No tienes una cuenta?{" "}
-          <a href="/register" className="text-primary hover:underline">
-            Regístrate
-          </a>
-        </div>
-      </CardFooter>
+      
     </Card>
   );
 };

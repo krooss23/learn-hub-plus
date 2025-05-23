@@ -50,6 +50,11 @@ const RegisterForm = () => {
           title: "Registro exitoso",
           description: "Tu cuenta ha sido creada correctamente",
         });
+        setName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setRole("estudiante");
         // Aquí podrías redirigir al login si quieres
       })
       .catch(() => {

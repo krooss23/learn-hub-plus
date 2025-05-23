@@ -1,19 +1,23 @@
 import { Link } from "react-router-dom";
 import RegisterForm from "@/components/auth/RegisterForm";
+import MainLayout from "@/components/layout/MainLayout";
+import { ArrowLeft } from "lucide-react";
 
 const NewUser = () => (
-  <div className="min-h-screen bg-gray-50">
-    <header className="bg-white py-4 border-b">
-      <div className="container mx-auto px-4">
-        <Link to="/" className="text-2xl font-bold text-kampus-primary">
-          Aurum INC
+  <MainLayout>
+    <div className="w-full">
+      <div className="flex flex-col pt-8 pl-8">
+        <Link to="/usuarios" className="flex items-center text-base text-black hover:underline mb-1">
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Volver a Usuarios
         </Link>
+        <h1 className="text-2xl font-bold mb-8">Crear Nuevo Usuario</h1>
       </div>
-    </header>
-    <div className="flex justify-center items-center min-h-[calc(100vh-5rem)]">
-      <RegisterForm />
+      <div className="flex justify-center items-center">
+        <RegisterForm />
+      </div>
     </div>
-  </div>
+  </MainLayout>
 );
 
 export default NewUser;
