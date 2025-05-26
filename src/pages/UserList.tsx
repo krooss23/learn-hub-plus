@@ -5,11 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PencilIcon, Trash2Icon, PlusIcon } from "lucide-react";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState({ name: "", email: "", role: "todos" });
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:5214/api/users")
@@ -42,7 +43,7 @@ const UsersList = () => {
   };
 
   const handleEdit = (id) => {
-    // Aquí puedes redirigir a la página de edición o abrir un modal
+    navigate(`/usuarios/editar/${id}`);
   };
 
   return (
@@ -94,8 +95,12 @@ const UsersList = () => {
             <thead>
               <tr className="border-b">
                 <th className="px-4 py-2 text-left">Nombre</th>
+                <th className="px-4 py-2 text-left">Apellidos</th>
+                <th className="px-4 py-2 text-left">SenceNet</th>
+                <th className="px-4 py-2 text-left">País</th>
+                <th className="px-4 py-2 text-left">Estado</th>
+                <th className="px-4 py-2 text-left">Tipo de Usuario</th>
                 <th className="px-4 py-2 text-left">Correo</th>
-                <th className="px-4 py-2 text-left">Rol</th>
                 <th className="px-4 py-2 text-left">Opciones</th>
               </tr>
             </thead>
@@ -103,8 +108,12 @@ const UsersList = () => {
               {filteredUsers.map(user => (
                 <tr key={user.id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-2">{user.nombre}</td>
-                  <td className="px-4 py-2">{user.email}</td>
+                  <td className="px-4 py-2">{user.apellidos}</td>
+                  <td className="px-4 py-2">{user.senceNet}</td>
+                  <td className="px-4 py-2">{user.pais}</td>
+                  <td className="px-4 py-2">{user.estado}</td>
                   <td className="px-4 py-2 capitalize">{user.rol}</td>
+                  <td className="px-4 py-2">{user.email}</td>
                   <td className="px-4 py-2 flex gap-2">
                     <Button
                       variant="outline"
@@ -127,7 +136,7 @@ const UsersList = () => {
               ))}
               {filteredUsers.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="text-center py-4 text-muted-foreground">
+                  <td colSpan={8} className="text-center py-4 text-muted-foreground">
                     No se encontraron usuarios.
                   </td>
                 </tr>

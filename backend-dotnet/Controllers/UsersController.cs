@@ -65,6 +65,42 @@ namespace backend_dotnet.Controllers
             _context.SaveChanges();
             return Ok(new { message = "Usuario eliminado correctamente" });
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> GetUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateUser(int id, [FromBody] User updatedUser)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound(new { message = "Usuario no encontrado" });
+            }
+
+            // Actualiza los campos necesarios
+            user.Nombre = updatedUser.Nombre;
+            user.Apellidos = updatedUser.Apellidos;
+            user.SenceNet = updatedUser.SenceNet;
+            user.Pais = updatedUser.Pais;
+            user.Estado = updatedUser.Estado;
+            user.Email = updatedUser.Email;
+            user.Rol = updatedUser.Rol;
+            // No actualices la contraseña aquí, a menos que lo requieras
+
+            _context.SaveChanges();
+            return Ok(user);
+        }
     }
 
     public class LoginRequest

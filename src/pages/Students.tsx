@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -19,77 +18,25 @@ const Students = () => {
     empresa: "all",
     tipo: "all",
   });
+  const [studentsList, setStudentsList] = useState([]);
 
-  // Mock data for students
-  const studentsList = [
-    {
-      id: 1,
-      name: "Ana Martínez",
-      email: "ana.martinez@example.com",
-      avatar: "",
-      pais: "España",
-      region: "Cataluña",
-      ciudad: "Barcelona",
-      concesionario: "AutoMax",
-      empresa: "VehicleOne",
-      tipo: "asesor",
-      progress: 85,
-      enrolledCourses: 4,
-      completedCourses: 3,
-    },
-    {
-      id: 2,
-      name: "Carlos López",
-      email: "carlos.lopez@example.com",
-      avatar: "",
-      pais: "México",
-      region: "Ciudad de México",
-      ciudad: "Miguel Hidalgo",
-      concesionario: "CarMotors",
-      empresa: "AutoGroup",
-      tipo: "tecnico",
-      progress: 65,
-      enrolledCourses: 5,
-      completedCourses: 2,
-    },
-    {
-      id: 3,
-      name: "María Rodríguez",
-      email: "maria.rodriguez@example.com",
-      avatar: "",
-      pais: "Argentina",
-      region: "Buenos Aires",
-      ciudad: "La Plata",
-      concesionario: "AutoDrive",
-      empresa: "MotorCorp",
-      tipo: "ventas",
-      progress: 92,
-      enrolledCourses: 6,
-      completedCourses: 5,
-    },
-    {
-      id: 4,
-      name: "Juan Pérez",
-      email: "juan.perez@example.com",
-      avatar: "",
-      pais: "Colombia",
-      region: "Bogotá",
-      ciudad: "Chapinero",
-      concesionario: "CarWorld",
-      empresa: "VehicleTech",
-      tipo: "tecnico",
-      progress: 78,
-      enrolledCourses: 3,
-      completedCourses: 2,
-    },
-  ];
+  useEffect(() => {
+    fetch("http://localhost:5214/api/users")
+      .then(res => res.json())
+      .then(data => {
+        // Solo usuarios con rol estudiante
+        const estudiantes = data.filter((u: any) => u.rol === "estudiante");
+        setStudentsList(estudiantes);
+      });
+  }, []);
 
   // Filter students based on search query and filters
   const filteredStudents = studentsList.filter(student => {
+    const fullName = `${student.nombre} ${student.apellidos}`;
     const matchesSearch = 
-      student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      student.email.toLowerCase().includes(searchQuery.toLowerCase());
-    
+      fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (student.email && student.email.toLowerCase().includes(searchQuery.toLowerCase()));
+
     const matchesFilters = 
       (filters.pais === "all" ? true : student.pais === filters.pais) &&
       (filters.region === "all" ? true : student.region === filters.region) &&
@@ -97,7 +44,7 @@ const Students = () => {
       (filters.concesionario === "all" ? true : student.concesionario === filters.concesionario) &&
       (filters.empresa === "all" ? true : student.empresa === filters.empresa) &&
       (filters.tipo === "all" ? true : student.tipo === filters.tipo);
-    
+
     return matchesSearch && matchesFilters;
   });
 
@@ -281,13 +228,13 @@ const Students = () => {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <Avatar className="h-14 w-14">
-                  <AvatarImage src={student.avatar} alt={student.name} />
+                  <AvatarImage src={student.avatar} alt={`${student.nombre} ${student.apellidos}`} />
                   <AvatarFallback className="bg-primary text-white">
-                    {getInitials(student.name)}
+                    {getInitials(`${student.nombre} ${student.apellidos}`)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold text-lg">{student.name}</h3>
+                  <h3 className="font-semibold text-lg">{student.nombre} {student.apellidos}</h3>
                   <p className="text-sm text-muted-foreground">{student.email}</p>
                   <div className="flex gap-2 mt-1 flex-wrap">
                     <Badge variant="secondary" className="capitalize">
