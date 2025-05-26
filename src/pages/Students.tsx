@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SearchIcon, Flag, MapPin, Building, Briefcase, UserIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast"; // Asegúrate de tener este hook o usa tu sistema de notificaciones
 
 const Students = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,6 +21,22 @@ const Students = () => {
     tipo: "all",
   });
   const [studentsList, setStudentsList] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [newStudent, setNewStudent] = useState({
+    nombres: "",
+    apellidos: "",
+    rut: "",
+    pais: "",
+    empresa: "",
+    concesionario: "",
+    tipo: "",
+    senceNet: "", // <-- Nuevo campo
+    email: "", // <-- AGREGA ESTA LÍNEA
+    password: "",
+    confirmPassword: "",
+  });
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     fetch("http://localhost:5214/api/users")
@@ -102,10 +120,12 @@ const Students = () => {
               className="pl-9"
             />
           </div>
-          
           <div className="flex gap-2">
             <Button variant="outline" onClick={resetFilters}>
               Limpiar filtros
+            </Button>
+            <Button variant="default" onClick={() => setShowModal(true)}>
+              Crear estudiante
             </Button>
           </div>
         </div>
@@ -123,7 +143,7 @@ const Students = () => {
               <SelectContent>
                 <SelectItem value="all">Todos los países</SelectItem>
                 {countries.map(country => (
-                  <SelectItem key={country} value={country}>{country}</SelectItem>
+                  <SelectItem key={`${country ?? "country"}-${country}`} value={country}>{country}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -140,8 +160,8 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas las regiones</SelectItem>
-                {regions.map(region => (
-                  <SelectItem key={region} value={region}>{region}</SelectItem>
+                {regions.map((region, idx) => (
+                  <SelectItem key={`${region ?? "region"}-${idx}`} value={region}>{region}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -158,8 +178,8 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas las ciudades</SelectItem>
-                {cities.map(city => (
-                  <SelectItem key={city} value={city}>{city}</SelectItem>
+                {cities.map((city, idx) => (
+                  <SelectItem key={`${city ?? "city"}-${idx}`} value={city}>{city}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -176,8 +196,8 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los concesionarios</SelectItem>
-                {dealerships.map(dealership => (
-                  <SelectItem key={dealership} value={dealership}>{dealership}</SelectItem>
+                {dealerships.map((dealership, idx) => (
+                  <SelectItem key={`${dealership ?? "dealership"}-${idx}`} value={dealership}>{dealership}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -194,8 +214,8 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas las empresas</SelectItem>
-                {companies.map(company => (
-                  <SelectItem key={company} value={company}>{company}</SelectItem>
+                {companies.map((company, idx) => (
+                  <SelectItem key={`${company ?? "company"}-${idx}`} value={company}>{company}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -220,6 +240,210 @@ const Students = () => {
           </div>
         </div>
       </div>
+
+      {/* Toasts de éxito y error */}
+      {successMsg && (
+        <div className="fixed top-6 right-6 z-50">
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow">
+            {successMsg}
+          </div>
+        </div>
+      )}
+      {errorMsg && (
+        <div className="fixed top-6 right-6 z-50">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow">
+            {errorMsg}
+          </div>
+        </div>
+      )}
+
+      {/* Modal para crear estudiante */}
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent aria-describedby="crear-estudiante-desc">
+          <DialogHeader>
+            <DialogTitle>Crear estudiante</DialogTitle>
+          </DialogHeader>
+          <div id="crear-estudiante-desc" className="sr-only">
+            Formulario para crear un nuevo estudiante.
+          </div>
+          <form
+            onSubmit={async e => {
+              e.preventDefault();
+              setSuccessMsg("");
+              setErrorMsg("");
+              if (newStudent.password !== newStudent.confirmPassword) {
+                setErrorMsg("Las contraseñas no coinciden");
+                setTimeout(() => setErrorMsg(""), 3000);
+                return;
+              }
+              try {
+                const response = await fetch("http://localhost:5214/api/users", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    Nombre: newStudent.nombres,
+                    Apellidos: newStudent.apellidos,
+                    Rut: newStudent.rut,
+                    Pais: newStudent.pais,
+                    Empresa: newStudent.empresa,
+                    Concesionario: newStudent.concesionario,
+                    Tipo: newStudent.tipo,
+                    SenceNet: newStudent.senceNet,
+                    Email: newStudent.email,
+                    Password: newStudent.password,
+                    Rol: "estudiante"
+                  }),
+                });
+                if (response.ok) {
+                  const created = await response.json();
+                  setStudentsList(prev => [...prev, created]);
+                  setShowModal(false);
+                  setNewStudent({
+                    nombres: "",
+                    apellidos: "",
+                    rut: "",
+                    pais: "",
+                    empresa: "",
+                    concesionario: "",
+                    tipo: "",
+                    senceNet: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: "",
+                  });
+                  setSuccessMsg("Estudiante creado exitosamente");
+                  setTimeout(() => setSuccessMsg(""), 3000);
+                } else {
+                  setErrorMsg("Error al crear estudiante");
+                  setTimeout(() => setErrorMsg(""), 3000);
+                }
+              } catch (err) {
+                setErrorMsg("Error de conexión con el servidor");
+                setTimeout(() => setErrorMsg(""), 3000);
+              }
+            }}
+            className="space-y-4"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-1">Nombres</label>
+                <Input
+                  value={newStudent.nombres}
+                  onChange={e => setNewStudent({ ...newStudent, nombres: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Apellidos</label>
+                <Input
+                  value={newStudent.apellidos}
+                  onChange={e => setNewStudent({ ...newStudent, apellidos: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">RUT</label>
+                <Input
+                  value={newStudent.rut}
+                  onChange={e => setNewStudent({ ...newStudent, rut: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">SenceNet</label>
+                <Input
+                  value={newStudent.senceNet}
+                  onChange={e => setNewStudent({ ...newStudent, senceNet: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">País</label>
+                <Select
+                  value={newStudent.pais}
+                  onValueChange={value => setNewStudent({ ...newStudent, pais: value })}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona país" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map(country => (
+                      <SelectItem key={country} value={country}>{country}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block mb-1">Tipo</label>
+                <Select
+                  value={newStudent.tipo}
+                  onValueChange={value => setNewStudent({ ...newStudent, tipo: value })}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="tecnico">Técnico</SelectItem>
+                    <SelectItem value="asesor">Asesor</SelectItem>
+                    <SelectItem value="ventas">Ventas</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block mb-1">Contraseña</label>
+                <Input
+                  type="password"
+                  value={newStudent.password}
+                  onChange={e => setNewStudent({ ...newStudent, password: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Confirmar contraseña</label>
+                <Input
+                  type="password"
+                  value={newStudent.confirmPassword}
+                  onChange={e => setNewStudent({ ...newStudent, confirmPassword: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Email</label>
+                <Input
+                  type="email"
+                  value={newStudent.email}
+                  onChange={e => setNewStudent({ ...newStudent, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Empresa</label>
+                <Input
+                  value={newStudent.empresa}
+                  onChange={e => setNewStudent({ ...newStudent, empresa: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1">Concesionario</label>
+                <Input
+                  value={newStudent.concesionario}
+                  onChange={e => setNewStudent({ ...newStudent, concesionario: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit">Guardar</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Students Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
