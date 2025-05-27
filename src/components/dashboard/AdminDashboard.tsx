@@ -56,9 +56,11 @@ const AdminDashboard = () => {
               Nuevo Usuario
             </Link>
           </Button>
-          <Button variant="outline">
-            <PlusIcon className="h-4 w-4 mr-2" />
-            Nuevo Curso
+          <Button asChild variant="outline">
+            <Link to="/courses/create">
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Nuevo Curso
+            </Link>
           </Button>
         </div>
       </div>

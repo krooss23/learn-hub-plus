@@ -37,6 +37,8 @@ const Students = () => {
   });
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
     fetch("http://localhost:5214/api/users")
@@ -445,6 +447,69 @@ const Students = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Modal para ver perfil de estudiante */}
+      <Dialog open={showProfileModal} onOpenChange={setShowProfileModal}>
+        <DialogContent aria-describedby="ver-perfil-estudiante-desc">
+          <DialogHeader>
+            <DialogTitle>Perfil del estudiante</DialogTitle>
+          </DialogHeader>
+          <div id="ver-perfil-estudiante-desc" className="sr-only">
+            Visualización de los datos del estudiante seleccionado.
+          </div>
+          {selectedStudent && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 mb-4">
+                <Avatar className="h-14 w-14">
+                  <AvatarImage src={selectedStudent.avatar} alt={`${selectedStudent.nombre} ${selectedStudent.apellidos}`} />
+                  <AvatarFallback className="bg-primary text-white text-lg">
+                    {getInitials(`${selectedStudent.nombre} ${selectedStudent.apellidos}`)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="text-lg font-bold text-gray-900">{selectedStudent.nombre} {selectedStudent.apellidos}</div>
+                  <div className="text-sm text-gray-500">{selectedStudent.email}</div>
+                  <div className="flex gap-2 mt-1 flex-wrap">
+                    <Badge variant="secondary" className="capitalize">{selectedStudent.tipo}</Badge>
+                    <Badge variant="outline">{selectedStudent.pais}</Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-2 text-sm text-gray-700">
+                <div>
+                  <span className="font-medium text-gray-500">RUT:</span>{" "}
+                  <span className="text-gray-900">{selectedStudent.rut || "—"}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-500">SenceNet:</span>{" "}
+                  <span className="text-gray-900">{selectedStudent.senceNet || "—"}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-500">Empresa:</span>{" "}
+                  <span className="text-gray-900">{selectedStudent.empresa || "—"}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-500">Concesionario:</span>{" "}
+                  <span className="text-gray-900">{selectedStudent.concesionario || "—"}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-500">Progreso:</span>{" "}
+                  <span className="text-gray-900">{selectedStudent.progress ?? 0}%</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-500">Cursos completados:</span>{" "}
+                  <span className="text-gray-900">{selectedStudent.completedCourses ?? 0} de {selectedStudent.enrolledCourses ?? 0}</span>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="mt-6">
+            <Button variant="outline" className="w-full" onClick={() => setShowProfileModal(false)}>
+              Cerrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Students Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredStudents.map(student => (
@@ -489,7 +554,15 @@ const Students = () => {
               </div>
               
               <div className="mt-4">
-                <Button variant="outline" size="sm" className="w-full">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    setSelectedStudent(student);
+                    setShowProfileModal(true);
+                  }}
+                >
                   <UserIcon className="h-4 w-4 mr-2" />
                   Ver perfil
                 </Button>
