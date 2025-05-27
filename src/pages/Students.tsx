@@ -160,8 +160,8 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas las regiones</SelectItem>
-                {regions.map((region, idx) => (
-                  <SelectItem key={`${region ?? "region"}-${idx}`} value={region}>{region}</SelectItem>
+                {regions.filter(Boolean).map((region, idx) => (
+                  <SelectItem key={`${region}-${idx}`} value={region}>{region}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -178,8 +178,8 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas las ciudades</SelectItem>
-                {cities.map((city, idx) => (
-                  <SelectItem key={`${city ?? "city"}-${idx}`} value={city}>{city}</SelectItem>
+                {cities.filter(Boolean).map((city, idx) => (
+                  <SelectItem key={`${city}-${idx}`} value={city}>{city}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -196,8 +196,8 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los concesionarios</SelectItem>
-                {dealerships.map((dealership, idx) => (
-                  <SelectItem key={`${dealership ?? "dealership"}-${idx}`} value={dealership}>{dealership}</SelectItem>
+                {dealerships.filter(Boolean).map((dealership, idx) => (
+                  <SelectItem key={`${dealership}-${idx}`} value={dealership}>{dealership}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -214,8 +214,8 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas las empresas</SelectItem>
-                {companies.map((company, idx) => (
-                  <SelectItem key={`${company ?? "company"}-${idx}`} value={company}>{company}</SelectItem>
+                {companies.filter(Boolean).map((company, idx) => (
+                  <SelectItem key={`${company}-${idx}`} value={company}>{company}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -368,7 +368,7 @@ const Students = () => {
                     <SelectValue placeholder="Selecciona país" />
                   </SelectTrigger>
                   <SelectContent>
-                    {countries.map(country => (
+                    {countries.filter(Boolean).map(country => (
                       <SelectItem key={country} value={country}>{country}</SelectItem>
                     ))}
                   </SelectContent>
