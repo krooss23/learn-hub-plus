@@ -25,10 +25,10 @@ const ManageCourses = () => {
   const allCourses = [
     {
       id: "1",
-      title: "Matemáticas Avanzadas",
+      title: "Mecanica electrica",
       instructor: "Carlos Mendoza",
       coverImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Matemáticas",
+      category: "Mecanica",
       students: 28,
       startDate: "10/05/2025",
       schedule: "Lun, Mié 15:00-17:00",
@@ -42,10 +42,10 @@ const ManageCourses = () => {
     },
     {
       id: "2",
-      title: "Historia Universal",
+      title: "Nissan course",
       instructor: "Ana García",
       coverImage: "https://images.unsplash.com/photo-1447069387593-a5de0862481e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-      category: "Historia",
+      category: "Mecanica",
       students: 19,
       startDate: "05/05/2025",
       schedule: "Mar, Jue 10:00-12:00",
