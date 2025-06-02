@@ -89,13 +89,21 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
-
-@layer base {
-  * {
-    @apply border-border;
+@layer components {
+  .sidebar {
+    background-color: hsl(var(--sidebar-background));
+    color: hsl(var(--sidebar-foreground));
+    border-right: 1px solid hsl(var(--sidebar-border));
+    box-shadow: inset 0 0 0 1px hsl(var(--sidebar-ring));
   }
 
-  body {
-    @apply bg-background text-foreground;
+  .sidebar-header {
+    background-color: hsl(var(--sidebar-primary));
+    color: hsl(var(--sidebar-primary-foreground));
+  }
+
+  .sidebar-accent {
+    background-color: hsl(var(--sidebar-accent));
+    color: hsl(var(--sidebar-accent-foreground));
   }
 }

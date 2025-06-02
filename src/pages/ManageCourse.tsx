@@ -1,16 +1,15 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeftIcon, GripVertical, PlusIcon, Trash2Icon, UsersIcon } from "lucide-react";
+import { ArrowLeftIcon, PlusIcon, Trash2Icon, UsersIcon } from "lucide-react";
+import CourseInfoForm from "@/components/courses/CourseInfoForm";
+import ModulesManager from "@/components/courses/ModulesManager";
+import AssignmentsManager from "@/components/courses/AssignmentsManager";
+import StudentsTable from "@/components/courses/StudentsTable";
 
 const ManageCourse = () => {
   const { id } = useParams();
@@ -264,145 +263,7 @@ const ManageCourse = () => {
         <TabsContent value="basic">
           <Card>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Título del curso</Label>
-                  <Input
-                    id="title"
-                    value={course.title}
-                    onChange={(e) => setCourse({ ...course, title: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Descripción</Label>
-                  <Textarea
-                    id="description"
-                    value={course.description}
-                    onChange={(e) => setCourse({ ...course, description: e.target.value })}
-                    rows={4}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Categoría</Label>
-                    <Select
-                      value={course.category}
-                      onValueChange={(value) => setCourse({ ...course, category: value })}
-                    >
-                      <SelectTrigger id="category">
-                        <SelectValue placeholder="Selecciona una categoría" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Matemáticas">Matemáticas</SelectItem>
-                        <SelectItem value="Ciencias">Ciencias</SelectItem>
-                        <SelectItem value="Historia">Historia</SelectItem>
-                        <SelectItem value="Literatura">Literatura</SelectItem>
-                        <SelectItem value="Tecnología">Tecnología</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="instructor">Instructor</Label>
-                    <Input
-                      id="instructor"
-                      value={course.instructor}
-                      onChange={(e) => setCourse({ ...course, instructor: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="startDate">Fecha de inicio</Label>
-                    <Input
-                      id="startDate"
-                      type="date"
-                      value={course.startDate}
-                      onChange={(e) => setCourse({ ...course, startDate: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="endDate">Fecha de fin</Label>
-                    <Input
-                      id="endDate"
-                      type="date"
-                      value={course.endDate}
-                      onChange={(e) => setCourse({ ...course, endDate: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="schedule">Horario</Label>
-                    <Input
-                      id="schedule"
-                      value={course.schedule}
-                      onChange={(e) => setCourse({ ...course, schedule: e.target.value })}
-                      placeholder="Ej: Lun, Mié 15:00-17:00"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="coverImage">Imagen de portada</Label>
-                  <div className="mt-2 flex flex-col gap-4">
-                    <img
-                      src={course.coverImage}
-                      alt={course.title}
-                      className="h-40 w-full object-cover rounded-md"
-                    />
-                    <Input
-                      id="coverImage"
-                      type="file"
-                      accept="image/*"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Objetivos del curso</Label>
-                  <div className="space-y-2">
-                    {course.objectives.map((objective: string, index: number) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          value={objective}
-                          onChange={(e) => {
-                            const newObjectives = [...course.objectives];
-                            newObjectives[index] = e.target.value;
-                            setCourse({ ...course, objectives: newObjectives });
-                          }}
-                          className="flex-1"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            const newObjectives = course.objectives.filter((_: string, i: number) => i !== index);
-                            setCourse({ ...course, objectives: newObjectives });
-                          }}
-                        >
-                          <Trash2Icon className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setCourse({
-                          ...course,
-                          objectives: [...course.objectives, "Nuevo objetivo"]
-                        });
-                      }}
-                    >
-                      <PlusIcon className="h-4 w-4 mr-2" />
-                      Añadir objetivo
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <CourseInfoForm course={course} setCourse={setCourse} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -410,116 +271,15 @@ const ManageCourse = () => {
         <TabsContent value="content">
           <Card>
             <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Módulos y lecciones</h2>
-                <Button onClick={handleAddModule}>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Añadir módulo
-                </Button>
-              </div>
-
-              <div className="space-y-6">
-                {course.modules.map((module: any) => (
-                  <div key={module.id} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="flex items-center gap-2">
-                        <GripVertical className="h-5 w-5 text-gray-400" />
-                        <Input
-                          value={module.title}
-                          onChange={(e) => {
-                            const updatedModules = course.modules.map((m: any) => {
-                              if (m.id === module.id) {
-                                return { ...m, title: e.target.value };
-                              }
-                              return m;
-                            });
-                            setCourse({ ...course, modules: updatedModules });
-                          }}
-                          className="max-w-md"
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => handleAddLesson(module.id)}
-                        >
-                          <PlusIcon className="h-4 w-4 mr-2" />
-                          Añadir lección
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          onClick={() => handleDeleteModule(module.id)}
-                        >
-                          <Trash2Icon className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 pl-7">
-                      {module.lessons.map((lesson: any) => (
-                        <div key={lesson.id} className="flex items-center gap-2 border-b pb-2">
-                          <GripVertical className="h-4 w-4 text-gray-400" />
-                          <Input
-                            value={lesson.title}
-                            onChange={(e) => {
-                              const updatedModules = course.modules.map((m: any) => {
-                                if (m.id === module.id) {
-                                  const updatedLessons = m.lessons.map((l: any) => {
-                                    if (l.id === lesson.id) {
-                                      return { ...l, title: e.target.value };
-                                    }
-                                    return l;
-                                  });
-                                  return { ...m, lessons: updatedLessons };
-                                }
-                                return m;
-                              });
-                              setCourse({ ...course, modules: updatedModules });
-                            }}
-                            className="flex-1"
-                          />
-                          <Select
-                            value={lesson.type}
-                            onValueChange={(value) => {
-                              const updatedModules = course.modules.map((m: any) => {
-                                if (m.id === module.id) {
-                                  const updatedLessons = m.lessons.map((l: any) => {
-                                    if (l.id === lesson.id) {
-                                      return { ...l, type: value };
-                                    }
-                                    return l;
-                                  });
-                                  return { ...m, lessons: updatedLessons };
-                                }
-                                return m;
-                              });
-                              setCourse({ ...course, modules: updatedModules });
-                            }}
-                          >
-                            <SelectTrigger className="w-32">
-                              <SelectValue placeholder="Tipo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="video">Video</SelectItem>
-                              <SelectItem value="document">Documento</SelectItem>
-                              <SelectItem value="quiz">Cuestionario</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => handleDeleteLesson(module.id, lesson.id)}
-                          >
-                            <Trash2Icon className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ModulesManager
+                modules={course.modules}
+                setCourse={setCourse}
+                course={course}
+                handleAddModule={handleAddModule}
+                handleAddLesson={handleAddLesson}
+                handleDeleteModule={handleDeleteModule}
+                handleDeleteLesson={handleDeleteLesson}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -527,86 +287,13 @@ const ManageCourse = () => {
         <TabsContent value="assignments">
           <Card>
             <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Tareas y evaluaciones</h2>
-                <Button onClick={handleAddAssignment}>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Añadir tarea
-                </Button>
-              </div>
-
-              <div className="space-y-4">
-                {course.assignments.map((assignment: any) => (
-                  <div key={assignment.id} className="border rounded-lg p-4">
-                    <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-                      <div className="flex-1">
-                        <div className="space-y-4">
-                          <div className="space-y-2">
-                            <Label htmlFor={`title-${assignment.id}`}>Título</Label>
-                            <Input
-                              id={`title-${assignment.id}`}
-                              value={assignment.title}
-                              onChange={(e) => {
-                                const updatedAssignments = course.assignments.map((a: any) => {
-                                  if (a.id === assignment.id) {
-                                    return { ...a, title: e.target.value };
-                                  }
-                                  return a;
-                                });
-                                setCourse({ ...course, assignments: updatedAssignments });
-                              }}
-                            />
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label htmlFor={`dueDate-${assignment.id}`}>Fecha de entrega</Label>
-                              <Input
-                                id={`dueDate-${assignment.id}`}
-                                type="date"
-                                value={assignment.dueDate}
-                                onChange={(e) => {
-                                  const updatedAssignments = course.assignments.map((a: any) => {
-                                    if (a.id === assignment.id) {
-                                      return { ...a, dueDate: e.target.value };
-                                    }
-                                    return a;
-                                  });
-                                  setCourse({ ...course, assignments: updatedAssignments });
-                                }}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor={`maxGrade-${assignment.id}`}>Calificación máxima</Label>
-                              <Input
-                                id={`maxGrade-${assignment.id}`}
-                                type="number"
-                                value={assignment.maxGrade}
-                                onChange={(e) => {
-                                  const updatedAssignments = course.assignments.map((a: any) => {
-                                    if (a.id === assignment.id) {
-                                      return { ...a, maxGrade: parseInt(e.target.value) };
-                                    }
-                                    return a;
-                                  });
-                                  setCourse({ ...course, assignments: updatedAssignments });
-                                }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <Button 
-                        variant="ghost"
-                        size="icon"
-                        className="self-start"
-                        onClick={() => handleDeleteAssignment(assignment.id)}
-                      >
-                        <Trash2Icon className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <AssignmentsManager
+                assignments={course.assignments}
+                setCourse={setCourse}
+                course={course}
+                handleAddAssignment={handleAddAssignment}
+                handleDeleteAssignment={handleDeleteAssignment}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -614,40 +301,7 @@ const ManageCourse = () => {
         <TabsContent value="students">
           <Card>
             <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Estudiantes inscritos</h2>
-                <Button>
-                  <UsersIcon className="h-4 w-4 mr-2" />
-                  Inscribir estudiantes
-                </Button>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="py-2 px-4 text-left font-medium">Nombre</th>
-                      <th className="py-2 px-4 text-left font-medium">Email</th>
-                      <th className="py-2 px-4 text-left font-medium">Progreso</th>
-                      <th className="py-2 px-4 text-left font-medium">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {course.students.map((student: any) => (
-                      <tr key={student.id} className="border-b last:border-0">
-                        <td className="py-2 px-4">{student.name}</td>
-                        <td className="py-2 px-4">{student.email}</td>
-                        <td className="py-2 px-4">{student.progress}%</td>
-                        <td className="py-2 px-4">
-                          <Button variant="ghost" size="sm">
-                            Ver detalles
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <StudentsTable students={course.students} />
             </CardContent>
           </Card>
         </TabsContent>

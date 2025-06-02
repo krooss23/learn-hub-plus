@@ -24,6 +24,7 @@ import Notifications from "./pages/Notifications";
 import AdminDashboard from './components/dashboard/AdminDashboard';
 import MainLayout from "./components/layout/MainLayout";
 import UsersList from "./pages/UserList";
+import EditUser from "./pages/EditUser";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const App = () => (
               </MainLayout>
             }
           />
+          <Route path="/usuarios/editar/:id" element={<EditUser />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

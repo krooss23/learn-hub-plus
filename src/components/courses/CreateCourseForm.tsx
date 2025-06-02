@@ -97,7 +97,7 @@ const CreateCourseForm = () => {
             <Input
               id="title"
               type="text"
-              placeholder="Ej: Matemáticas Avanzadas"
+              placeholder="Ej: Mecanica avanzada"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required

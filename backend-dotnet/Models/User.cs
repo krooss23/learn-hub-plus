@@ -11,5 +11,11 @@ namespace backend_dotnet.Models
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Rol { get; set; } = "estudiante";
+
+        // Nuevos campos agregados:
+        public string Rut { get; set; } = string.Empty;
+        public string Empresa { get; set; } = string.Empty;
+        public string Concesionario { get; set; } = string.Empty;
+        public string Tipo { get; set; } = string.Empty;
     }
 }
