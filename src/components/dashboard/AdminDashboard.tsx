@@ -111,7 +111,7 @@ const AdminDashboard = () => {
 								<img
 									src={vehicle.img}
 									alt={vehicle.name}
-									className="w-full h-40 object-cover rounded-lg"
+									className="w-full h-40 object-cover rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
 								/>
 								<div className="py-3 text-center font-semibold text-gray-700">{vehicle.name}</div>
 							</div>

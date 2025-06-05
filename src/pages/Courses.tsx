@@ -8,6 +8,12 @@ import { PlusIcon, SearchIcon } from "lucide-react";
 import CourseGrid from "@/components/courses/CourseGrid";
 import { useState, useEffect } from "react";
 
+type CourseGridProps = {
+  courses: any[];
+  role: "estudiante" | "profesor" | "admin";
+  viewMode?: "grid" | "list";
+};
+
 const Courses = () => {
   const [userRole, setUserRole] = useState<"estudiante" | "profesor" | "admin">("estudiante");
   const [courses, setCourses] = useState<any[]>([]);
@@ -128,7 +134,37 @@ const Courses = () => {
         </div>
       </div>
       
-      <CourseGrid courses={courses} role={userRole} />
+      {userRole === "profesor" || userRole === "admin" ? (
+        <div className="flex flex-col gap-4">
+          {courses.map(course => (
+            <div key={course.id} className="bg-white rounded-xl shadow p-4 flex items-center gap-4 border">
+              <img
+                src={course.coverImage || "/placeholder.svg"}
+                alt={course.title}
+                className="w-28 h-28 object-cover rounded-lg bg-gray-100"
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-bold">{course.title}</h2>
+                  <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">{course.category}</span>
+                </div>
+                <div className="text-sm text-gray-500">Instructor: {course.instructor}</div>
+                <div className="text-xs text-gray-400 mt-1">
+                  <span>Inicio: {course.startDate}</span>
+                </div>
+                <div className="text-xs text-gray-400">{course.schedule}</div>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">Ver</Button>
+                <Button variant="outline" size="sm">Editar</Button>
+                <Button variant="destructive" size="sm">Eliminar</Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <CourseGrid courses={courses} role={userRole} />
+      )}
     </MainLayout>
   );
 };
