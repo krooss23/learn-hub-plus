@@ -1,16 +1,18 @@
-import { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Link } from "react-router-dom";
+import { PlusIcon, SearchIcon } from "lucide-react";
+import CourseGrid from "@/components/courses/CourseGrid";
+import { useState, useEffect } from "react";
+import { Flag, MapPin, Building, Briefcase, Pen as PenIcon, Trash2 as Trash2Icon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
-import { SearchIcon, PlusIcon, Flag, MapPin, Building, Briefcase, PenIcon, Trash2Icon } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 const ManageCourses = () => {
-  const { toast } = useToast();
+  const [courses, setCourses] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     pais: "",
@@ -20,102 +22,57 @@ const ManageCourses = () => {
     empresa: "",
     tipo: "",
   });
-  
-  // Mock data for courses
-  const allCourses = [
-    {
-      id: "1",
-      title: "Mecanica electrica",
-      instructor: "Carlos Mendoza",
-      coverImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Mecanica",
-      students: 28,
-      startDate: "10/05/2025",
-      schedule: "Lun, Mié 15:00-17:00",
-      pais: "España",
-      region: "Cataluña",
-      ciudad: "Barcelona",
-      concesionario: "AutoMax",
-      empresa: "VehicleOne",
-      tipo: "tecnico",
-      status: "active",
-    },
-    {
-      id: "2",
-      title: "Nissan course",
-      instructor: "Ana García",
-      coverImage: "https://images.unsplash.com/photo-1447069387593-a5de0862481e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-      category: "Mecanica",
-      students: 19,
-      startDate: "05/05/2025",
-      schedule: "Mar, Jue 10:00-12:00",
-      pais: "México",
-      region: "Ciudad de México",
-      ciudad: "Miguel Hidalgo",
-      concesionario: "CarWorld",
-      empresa: "AutoGroup",
-      tipo: "asesor",
-      status: "active",
-    },
-    {
-      id: "3",
-      title: "Programación en Python",
-      instructor: "Ricardo Torres",
-      coverImage: "https://images.unsplash.com/photo-1526379879527-8559ecfcaec0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80",
-      category: "Tecnología",
-      students: 35,
-      startDate: "15/05/2025",
-      schedule: "Vie 14:00-18:00",
-      pais: "Colombia",
-      region: "Bogotá",
-      ciudad: "Chapinero",
-      concesionario: "CarDrive",
-      empresa: "VehicleTech",
-      tipo: "tecnico",
-      status: "active",
-    },
-    {
-      id: "4",
-      title: "Ventas y Atención al Cliente",
-      instructor: "Laura Sánchez",
-      coverImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Negocios",
-      students: 42,
-      startDate: "20/05/2025",
-      schedule: "Lun, Mié, Vie 16:00-18:00",
-      pais: "Argentina",
-      region: "Buenos Aires",
-      ciudad: "La Plata",
-      concesionario: "AutoDrive",
-      empresa: "MotorCorp",
-      tipo: "ventas",
-      status: "draft",
-    },
-  ];
 
-  // Filter courses based on search and filters
-  const filteredCourses = allCourses.filter(course => {
-    const matchesSearch = 
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      course.instructor.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesFilters = 
+  // Cargar cursos reales desde la API
+  useEffect(() => {
+    fetch("http://localhost:5214/api/courses")
+      .then(res => res.json())
+      .then(data => {
+        // Ajusta los nombres según lo que devuelve tu backend
+        const mapped = data.map((course: any) => ({
+          id: course.id,
+          title: course.nombre || course.title,
+          instructor: course.profesor || course.instructor,
+          coverImage: course.imagenUrl || course.coverImage,
+          category: course.categoria || course.category,
+          students: course.estudiantes || course.students,
+          startDate: course.fechaInicio || course.startDate,
+          status: course.estado || course.status,
+          pais: course.pais,
+          region: course.region,
+          ciudad: course.ciudad,
+          concesionario: course.concesionario,
+          empresa: course.empresa,
+          tipo: course.tipo,
+        }));
+        setCourses(mapped);
+      })
+      .catch(err => console.error(err));
+  }, []);
+
+  // Filtrar cursos igual que hacías con allCourses
+  const filteredCourses = courses.filter(course => {
+    const matchesSearch =
+      (course.title && course.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (course.instructor && course.instructor.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const matchesFilters =
       (filters.pais ? course.pais === filters.pais : true) &&
       (filters.region ? course.region === filters.region : true) &&
       (filters.ciudad ? course.ciudad === filters.ciudad : true) &&
       (filters.concesionario ? course.concesionario === filters.concesionario : true) &&
       (filters.empresa ? course.empresa === filters.empresa : true) &&
       (filters.tipo ? course.tipo === filters.tipo : true);
-    
+
     return matchesSearch && matchesFilters;
   });
 
-  // Get unique values for filters
-  const countries = [...new Set(allCourses.map(c => c.pais))];
-  const regions = [...new Set(allCourses.map(c => c.region))];
-  const cities = [...new Set(allCourses.map(c => c.ciudad))];
-  const dealerships = [...new Set(allCourses.map(c => c.concesionario))];
-  const companies = [...new Set(allCourses.map(c => c.empresa))];
+  // Obtén los valores únicos para los selects desde courses
+  const countries = [...new Set(courses.map(c => c.pais).filter(Boolean))];
+  const regions = [...new Set(courses.map(c => c.region).filter(Boolean))];
+  const cities = [...new Set(courses.map(c => c.ciudad).filter(Boolean))];
+  const dealerships = [...new Set(courses.map(c => c.concesionario).filter(Boolean))];
+  const companies = [...new Set(courses.map(c => c.empresa).filter(Boolean))];
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({
@@ -148,12 +105,12 @@ const ManageCourses = () => {
     <MainLayout>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold">Gestionar Cursos</h1>
-        <Button className="bg-primary hover:bg-primary/90" asChild>
-          <Link to="/courses/create">
+        <Link to="/courses/create">
+          <Button className="bg-primary hover:bg-primary/90">
             <PlusIcon className="h-4 w-4 mr-2" />
             Crear Nuevo Curso
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
       
       {/* Search and filters */}
@@ -289,8 +246,9 @@ const ManageCourses = () => {
             <CardContent className="p-0">
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-48 h-40 relative">
+                  {/* Imagen con fallback */}
                   <img 
-                    src={course.coverImage} 
+                    src={course.coverImage || "/images/INClogo.png"} 
                     alt={course.title}
                     className="w-full h-full object-cover"
                   />
@@ -337,7 +295,8 @@ const ManageCourses = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Inicio</p>
-                      <p className="text-sm">{course.startDate}</p>
+                      {/* Fecha solo con día (sin hora) */}
+                      <p className="text-sm">{course.startDate?.split("T")[0]}</p>
                     </div>
                   </div>
                   
@@ -363,19 +322,13 @@ const ManageCourses = () => {
 
 // Status badge component
 const StatusBadge = ({ status }: { status: string }) => {
-  if (status === "active") {
-    return (
-      <Badge className="bg-green-500">Activo</Badge>
-    );
-  } else if (status === "draft") {
-    return (
-      <Badge variant="secondary">Borrador</Badge>
-    );
-  } else {
-    return (
-      <Badge variant="outline">Inactivo</Badge>
-    );
+  if (status === "Activo") {
+    return <Badge className="bg-green-500 text-white">Activo</Badge>;
   }
+  if (status === "Inactivo") {
+    return <Badge className="bg-gray-400 text-white">Inactivo</Badge>;
+  }
+  return null;
 };
 
 export default ManageCourses;

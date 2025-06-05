@@ -25,6 +25,8 @@ import AdminDashboard from './components/dashboard/AdminDashboard';
 import MainLayout from "./components/layout/MainLayout";
 import UsersList from "./pages/UserList";
 import EditUser from "./pages/EditUser";
+import Empresas from "./pages/EmpresasList"; 
+import EmpresaForm from "./pages/EmpresaForm"; // Asegúrate de tener este componente
 
 const queryClient = new QueryClient();
 
@@ -69,6 +71,22 @@ const App = () => (
             }
           />
           <Route path="/usuarios/editar/:id" element={<EditUser />} />
+          <Route
+            path="/empresas"
+            element={
+              <MainLayout>
+                <Empresas />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/empresas/nueva"
+            element={
+              <MainLayout>
+                <EmpresaForm />
+              </MainLayout>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -13,7 +13,8 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { getCurrentUser } from "@/lib/auth";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, NavLink } from "react-router-dom";
+import { BuildingOffice2Icon } from "@heroicons/react/24/outline"; // Ya está importado
 
 interface SidebarProps {
   open: boolean;
@@ -38,6 +39,7 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
     { id: "students", label: "Estudiantes", icon: UsersIcon, path: "/students", roles: ["profesor", "admin"] },
     { id: "manage-courses", label: "Gestionar Cursos", icon: BookIcon, path: "/manage-courses", roles: ["admin"] },
     { id: "user-list", label: "Lista de Usuarios", icon: UsersIcon, path: "/usuarios", roles: ["admin"] },
+    { id: "empresas", label: "Empresas", icon: BuildingOffice2Icon, path: "/empresas", roles: ["admin"] }, // <-- Añade esto
   ];
 
   const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole));
