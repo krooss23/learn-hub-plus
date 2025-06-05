@@ -6,8 +6,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/components/ui/use-toast";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const LoginForm = () => {
+  const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -33,8 +35,8 @@ const LoginForm = () => {
 
       if (response.ok) {
         const user = await response.json();
-        // Guarda el usuario en localStorage
         localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
 
         console.log("Login successful:", { email, role: user.rol });
         toast({
@@ -42,16 +44,8 @@ const LoginForm = () => {
           description: `Bienvenido a Aorus INC, ${user.nombre}`,
         });
 
-        // Redirección basada en el rol
-        if (user.rol === "admin") {
-          navigate("/admin-dashboard");
-        } else if (user.rol === "profesor") {
-          navigate("/profesor-dashboard");
-        } else if (user.rol === "estudiante") {
-          navigate("/estudiante-dashboard");
-        } else {
-          navigate("/dashboard");
-        }
+        // Redirección única
+        navigate("/dashboard");
       } else {
         console.log("Login failed:", { email });
         toast({
