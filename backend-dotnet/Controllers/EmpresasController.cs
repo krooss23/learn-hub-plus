@@ -30,5 +30,24 @@ namespace backend_dotnet.Controllers
             await _context.SaveChangesAsync();
             return Ok(empresa);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateEmpresa(int id, [FromBody] Empresa empresa)
+        {
+            var empresaDb = await _context.Empresas.FindAsync(id);
+            if (empresaDb == null)
+                return NotFound();
+
+            empresaDb.Nombre = empresa.Nombre;
+            empresaDb.Pais = empresa.Pais;
+            empresaDb.Region = empresa.Region;
+            empresaDb.Zona = empresa.Zona;
+            empresaDb.TextoBienvenida = empresa.TextoBienvenida;
+            empresaDb.Activo = empresa.Activo;
+            // Agrega aquí otros campos si tienes más
+
+            await _context.SaveChangesAsync();
+            return Ok(empresaDb);
+        }
     }
 }

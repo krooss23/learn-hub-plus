@@ -12,7 +12,7 @@ export default function EmpresaForm() {
   });
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, files } = e.target as any;
     setForm(f => ({
       ...f,
@@ -52,12 +52,21 @@ export default function EmpresaForm() {
         </div>
         <div>
           <label className="block text-gray-700 mb-1">País</label>
-          <input
+          <select
             name="pais"
             className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
             required
+            value={form.pais}
             onChange={handleChange}
-          />
+          >
+            <option value="">Selecciona un país</option>
+            <option value="Chile">Chile</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Perú">Perú</option>
+            <option value="México">México</option>
+            <option value="Colombia">Colombia</option>
+            {/* Agrega más países si lo deseas */}
+          </select>
         </div>
         <div>
           <label className="block text-gray-700 mb-1">Texto de bienvenida</label>

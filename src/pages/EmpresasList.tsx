@@ -48,11 +48,16 @@ export default function EmpresasList() {
     setShowEditModal(true);
   };
 
-  const handleSaveEdit = () => {
-    // Aquí deberías hacer el fetch/put/patch a la API
+  const handleSaveEdit = async () => {
+    if (!empresaEdit) return;
+    await fetch(`http://localhost:5214/api/empresas/${empresaEdit.id}`, {
+      method: 'PUT', // O PATCH según tu backend
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(empresaEdit),
+    });
     setShowEditModal(false);
     setEmpresaEdit(null);
-    // Actualiza la lista si es necesario
+    fetchEmpresas(); // Recarga la lista para reflejar los cambios
   };
 
   return (
@@ -217,14 +222,53 @@ export default function EmpresasList() {
                 value={empresaEdit.nombre}
                 onChange={ev => setEmpresaEdit({ ...empresaEdit, nombre: ev.target.value })}
                 placeholder="Nombre"
+                required
               />
+              <select
+                className="border rounded px-3 py-2"
+                value={empresaEdit.pais || ""}
+                onChange={ev => setEmpresaEdit({ ...empresaEdit, pais: ev.target.value })}
+                required
+              >
+                <option value="">Selecciona un país</option>
+                {paises.map(pais => (
+                  <option key={pais} value={pais}>{pais}</option>
+                ))}
+              </select>
+              <select
+                className="border rounded px-3 py-2"
+                value={empresaEdit.region || ""}
+                onChange={ev => setEmpresaEdit({ ...empresaEdit, region: ev.target.value })}
+              >
+                <option value="">Selecciona una región</option>
+                {regiones.map(region => (
+                  <option key={region} value={region}>{region}</option>
+                ))}
+              </select>
+              <select
+                className="border rounded px-3 py-2"
+                value={empresaEdit.zona || ""}
+                onChange={ev => setEmpresaEdit({ ...empresaEdit, zona: ev.target.value })}
+              >
+                <option value="">Selecciona una zona</option>
+                {zonas.map(zona => (
+                  <option key={zona} value={zona}>{zona}</option>
+                ))}
+              </select>
               <input
                 className="border rounded px-3 py-2"
-                value={empresaEdit.textoBienvenida}
+                value={empresaEdit.textoBienvenida || ""}
                 onChange={ev => setEmpresaEdit({ ...empresaEdit, textoBienvenida: ev.target.value })}
                 placeholder="Texto de bienvenida"
               />
-              {/* Agrega más campos según tu modelo */}
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={empresaEdit.activo}
+                  onChange={ev => setEmpresaEdit({ ...empresaEdit, activo: ev.target.checked })}
+                />
+                Activo
+              </label>
               <button
                 type="submit"
                 className="bg-primary text-white px-4 py-2 rounded shadow hover:bg-primary/90 transition"
