@@ -40,9 +40,9 @@ const Index = () => {
               Una solución completa para la gestión del aprendizaje, comunicación académica y seguimiento del progreso educativo.
             </p>
             <div className="space-x-4">
-              <Link to="/register">
+              <Link to="#">
                 <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
-                  Comenzar Ahora
+                  Conocer Aurum INC
                 </Button>
               </Link>
               <Button variant="outline" size="lg" className="text-black border-white hover:bg-white/10">

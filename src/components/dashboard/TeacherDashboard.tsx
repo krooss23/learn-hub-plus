@@ -10,30 +10,30 @@ const TeacherDashboard = () => {
   const courses = [
     {
       id: "1",
-      title: "Matemáticas Avanzadas",
+      title: "Mecanica basicas",
       instructor: "Prof. Juan Pérez",
       coverImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Matemáticas",
+      category: "Mecanica basicas",
       students: 28,
       startDate: "10/05/2025",
       schedule: "Lun, Mié 15:00-17:00"
     },
     {
       id: "2",
-      title: "Álgebra Lineal",
+      title: "Componentes y Sistemas de vehículos",
       instructor: "Prof. Juan Pérez",
       coverImage: "https://images.unsplash.com/photo-1509228468518-180dd4864904?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      category: "Matemáticas",
+      category: "Componentes y Sistemas de vehículos",
       students: 36,
       startDate: "05/05/2025",
       schedule: "Mar, Jue 10:00-12:00"
     },
     {
       id: "3",
-      title: "Geometría Analítica",
+      title: "",
       instructor: "Prof. Juan Pérez",
       coverImage: "https://images.unsplash.com/photo-1636466497217-26a5865ebd3a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      category: "Matemáticas",
+      category: "Mecanica integrada",
       students: 22,
       startDate: "15/05/2025",
       schedule: "Vie 14:00-18:00"
@@ -42,9 +42,9 @@ const TeacherDashboard = () => {
   
   // Mock pending assignments to grade
   const pendingGrades = [
-    { id: "1", title: "Ecuaciones Diferenciales", course: "Matemáticas Avanzadas", submitted: 25, total: 28 },
-    { id: "2", title: "Matrices y Determinantes", course: "Álgebra Lineal", submitted: 30, total: 36 },
-    { id: "3", title: "Circunferencia", course: "Geometría Analítica", submitted: 18, total: 22 }
+    { id: "1", title: "Mecanicas basicas", course: "Mecanicas basicas", submitted: 25, total: 28 },
+    { id: "2", title: "Componentes y Sistemas de vehículos", course: "Componentes y Sistemas de vehículos", submitted: 30, total: 36 },
+    { id: "3", title: "Mecanica integrada", course: "Mecanica integrada", submitted: 18, total: 22 }
   ];
   
   // Mock upcoming classes

@@ -21,10 +21,14 @@ export default function EmpresasList() {
   const [empresaEdit, setEmpresaEdit] = useState<Empresa | null>(null);
   const navigate = useNavigate();
 
+  const fetchEmpresas = async () => {
+    const res = await fetch('http://localhost:5214/api/empresas');
+    const data = await res.json();
+    setEmpresas(data);
+  };
+
   useEffect(() => {
-    fetch("http://localhost:5214/api/empresas")
-      .then(res => res.json())
-      .then(setEmpresas);
+    fetchEmpresas();
   }, []);
 
   // Obtener valores únicos para los selects

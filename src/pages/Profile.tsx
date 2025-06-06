@@ -15,16 +15,16 @@ const Profile = () => {
   const { toast } = useToast();
   const currentUser = getCurrentUser();
   const [user, setUser] = useState({
-    name: currentUser?.name || "Usuario Demo",
+    name: currentUser?.name || "Usuario Administrador",
     email: currentUser?.email || "usuario@demo.com",
-    role: currentUser?.role || "estudiante",
+    role: currentUser?.role || "administrador",
     avatar: currentUser?.avatar || "",
     country: "España",
     region: "Cataluña",
     city: "Barcelona",
     dealership: "AutoMax",
     company: "VehicleOne",
-    type: "asesor",
+    type: "Administrador",
     bio: "Especialista en asesoramiento de ventas con más de 5 años de experiencia en el sector automotriz.",
     phone: "+34 612 345 678",
     linkedin: "linkedin.com/in/usuario-demo",

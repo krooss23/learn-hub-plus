@@ -1,5 +1,7 @@
+using backend_dotnet.Data;
 using backend_dotnet.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; // Asegúrate de tener esto
 
 namespace backend_dotnet.Controllers
 {
@@ -7,16 +9,25 @@ namespace backend_dotnet.Controllers
     [Route("api/[controller]")]
     public class EmpresasController : ControllerBase
     {
-        private static List<Empresa> empresas = new();
+        private readonly AppDbContext _context;
+
+        public EmpresasController(AppDbContext context)
+        {
+            _context = context;
+        }
 
         [HttpGet]
-        public IActionResult Get() => Ok(empresas);
+        public async Task<IActionResult> Get()
+        {
+            var empresas = await _context.Empresas.ToListAsync();
+            return Ok(empresas);
+        }
 
         [HttpPost]
-        public IActionResult Post([FromForm] Empresa empresa)
+        public async Task<IActionResult> CreateEmpresa([FromBody] Empresa empresa)
         {
-            empresa.Id = empresas.Count + 1;
-            empresas.Add(empresa);
+            _context.Empresas.Add(empresa);
+            await _context.SaveChangesAsync();
             return Ok(empresa);
         }
     }

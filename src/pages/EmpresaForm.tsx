@@ -20,17 +20,18 @@ export default function EmpresaForm() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const data = new FormData();
-    Object.entries(form).forEach(([k, v]) => {
-      if (v) data.append(k, v);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    // Solo envía los campos que tu backend espera
+    const { nombre, pais, textoBienvenida } = form;
+    const response = await fetch('http://localhost:5214/api/empresas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, pais, textoBienvenida }),
     });
-    await fetch("http://localhost:5214/api/empresas", {
-      method: "POST",
-      body: data,
-    });
-    navigate("/empresas");
+    if (response.ok) {
+      navigate("/empresas"); // Redirige al listado de empresas
+    }
   };
 
   return (
