@@ -123,7 +123,11 @@ const AdminDashboard = () => {
 								style={{ textDecoration: "none" }}
 							>
 								<img
-									src={empresa.logoUrl || "/logo-placeholder.png"}
+									src={
+										empresa.logotipoUrl
+											? `http://localhost:5214${empresa.logotipoUrl}`
+											: "/logo-placeholder.png"
+									}
 									alt={empresa.nombre}
 									className="w-full h-40 object-cover rounded-lg"
 									onError={e => {
