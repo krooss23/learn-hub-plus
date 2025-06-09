@@ -10,6 +10,7 @@ interface Empresa {
   zona: string;
   textoBienvenida: string;
   activo: boolean;
+  logotipoUrl?: string; // Agregado para la URL del logotipo
 }
 
 export default function EmpresasList() {
@@ -19,6 +20,9 @@ export default function EmpresasList() {
   const [filtroZona, setFiltroZona] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [empresaEdit, setEmpresaEdit] = useState<Empresa | null>(null);
+  const [allPaises, setAllPaises] = useState<string[]>([]);
+  const [allRegiones, setAllRegiones] = useState<string[]>([]);
+  const [allZonas, setAllZonas] = useState<string[]>([]);
   const navigate = useNavigate();
 
   const fetchEmpresas = async () => {
@@ -30,6 +34,57 @@ export default function EmpresasList() {
   useEffect(() => {
     fetchEmpresas();
   }, []);
+
+  // Carga todos los países al montar
+  useEffect(() => {
+    fetch("http://localhost:5214/api/regiones")
+      .then(res => res.json())
+      .then(setAllPaises);
+  }, []);
+
+  // Carga regiones y zonas cuando cambie el país seleccionado en el modal
+  useEffect(() => {
+    if (empresaEdit?.pais) {
+      fetch(`http://localhost:5214/api/regiones/${empresaEdit.pais}`)
+        .then(res => res.json())
+        .then(setAllRegiones);
+
+      fetch(`http://localhost:5214/api/regiones/${empresaEdit.pais}/zonas`)
+        .then(res => res.json())
+        .then(data => {
+          // Si data es un objeto, conviértelo a array de claves (zonas)
+          if (data && typeof data === "object" && !Array.isArray(data)) {
+            setAllZonas(Object.keys(data));
+          } else if (Array.isArray(data)) {
+            setAllZonas(data);
+          } else {
+            setAllZonas([]);
+          }
+        });
+    } else {
+      setAllRegiones([]);
+      setAllZonas([]);
+    }
+  }, [empresaEdit?.pais]);
+
+  // Agrega este useEffect para seleccionar automáticamente la zona al cambiar la región en el modal de edición
+  useEffect(() => {
+    if (empresaEdit?.region && allZonas.length > 0) {
+      // Si la región coincide con una zona, selecciónala automáticamente
+      if (allZonas.includes(empresaEdit.region)) {
+        setEmpresaEdit(edit => edit ? { ...edit, zona: edit.region } : edit);
+      }
+      // Si no, selecciona la primera zona disponible si no hay zona seleccionada
+      else if (!empresaEdit.zona) {
+        setEmpresaEdit(edit => edit ? { ...edit, zona: allZonas[0] } : edit);
+      }
+    }
+    // Limpia la zona si no hay región seleccionada
+    if (!empresaEdit?.region) {
+      setEmpresaEdit(edit => edit ? { ...edit, zona: "" } : edit);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaEdit?.region, allZonas]);
 
   // Obtener valores únicos para los selects
   const paises = Array.from(new Set(empresas.map(e => e.pais))).filter(Boolean);
@@ -155,52 +210,70 @@ export default function EmpresasList() {
         {empresasFiltradas.map(e => (
           <div
             key={e.id}
-            className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 flex flex-col gap-2 border border-gray-100"
+            className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 flex items-center gap-5 border border-gray-100"
           >
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 text-primary rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg shadow-sm">
-                  {e.nombre
-                    .split(" ")
-                    .map(w => w[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
+            {/* Logo grande a la izquierda */}
+            <div className="flex-shrink-0 flex items-center justify-center bg-white rounded-full border border-gray-200 shadow" style={{ width: 96, height: 96 }}>
+              {e.logotipoUrl ? (
+                <img
+                  src={`http://localhost:5214${e.logotipoUrl}`}
+                  alt={e.nombre}
+                  className="object-contain"
+                  style={{ width: 88, height: 88 }}
+                />
+              ) : (
+                <div className="w-24 h-24 flex items-center justify-center rounded-full bg-gray-200 text-4xl font-bold text-gray-500">
+                  {e.nombre[0]}
                 </div>
+              )}
+            </div>
+            {/* Info y acciones */}
+            <div className="flex-1 flex flex-col justify-between h-full">
+              <div className="flex justify-between items-start">
                 <div>
-                  <div className="font-semibold text-gray-900">{e.nombre}</div>
-                  <div className="text-xs text-gray-500">{e.pais}</div>
-                  <div className="text-gray-700 text-sm mt-1 line-clamp-2">{e.textoBienvenida}</div>
-                  <span className={`mt-2 inline-block px-2 py-1 rounded text-xs font-medium ${e.activo ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-500"}`}>
+                  <div className="font-bold text-xl text-gray-900">{e.nombre}</div>
+                  <div className="text-sm text-gray-500">{e.pais}</div>
+                  <div className="text-base text-gray-700 mt-1">{e.textoBienvenida}</div>
+                  <span className={`mt-2 inline-block px-3 py-1 rounded-full text-xs font-semibold ${e.activo ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-500"}`}>
                     {e.activo ? "Activo" : "Inactivo"}
                   </span>
                 </div>
-              </div>
-              <div className="flex flex-col gap-2 ml-4">
-                {/* Editar */}
-                <button
-                  className="flex items-center gap-1 px-3 py-1.5 rounded bg-yellow-100 text-yellow-800 shadow-sm hover:bg-yellow-200 transition-all duration-150 active:scale-95"
-                  title="Editar"
-                  onClick={() => handleEdit(e)}
-                >
-                  <PencilIcon className="w-4 h-4" />
-                </button>
-                {/* Link público */}
-                <button
-                  className="flex items-center gap-1 px-3 py-1.5 rounded bg-blue-100 text-blue-800 shadow-sm hover:bg-blue-200 transition-all duration-150 active:scale-95"
-                  title="Link público"
-                  onClick={() => window.open(`/empresas/${e.id}/public`, "_blank")}
-                >
-                  <LinkIcon className="w-4 h-4" />
-                </button>
-                {/* Borrar */}
-                <button
-                  className="flex items-center gap-1 px-3 py-1.5 rounded bg-red-100 text-red-800 shadow-sm hover:bg-red-200 transition-all duration-150 active:scale-95"
-                  title="Borrar"
-                  onClick={() => handleDelete(e.id)}
-                >
-                  <XMarkIcon className="w-4 h-4" />
-                </button>
+                <div className="flex flex-col gap-2 ml-4">
+                  {/* Editar */}
+                  <button
+                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-yellow-100 text-yellow-800 shadow-sm hover:bg-yellow-200 transition-all duration-150 active:scale-95"
+                    title="Editar"
+                    onClick={() => handleEdit(e)}
+                  >
+                    <PencilIcon className="w-4 h-4" />
+                  </button>
+                  {/* Link público (no hace nada) */}
+                  <button
+                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-blue-100 text-blue-800 shadow-sm hover:bg-blue-200 transition-all duration-150 active:scale-95"
+                    title="Link público"
+                    onClick={() => {}} // No hace nada
+                  >
+                    <LinkIcon className="w-4 h-4" />
+                  </button>
+                  {/* Borrar */}
+                  <button
+                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-red-100 text-red-800 shadow-sm hover:bg-red-200 transition-all duration-150 active:scale-95"
+                    title="Borrar"
+                    onClick={() => handleDelete(e.id)}
+                  >
+                    <XMarkIcon className="w-4 h-4" />
+                  </button>
+                  {/* Botón Home (abre link público) */}
+                  <button
+                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-gray-100 text-gray-700 shadow-sm hover:bg-gray-200 transition-all duration-150 active:scale-95"
+                    title="Ir al inicio"
+                    onClick={() => window.open(`/empresas/${e.id}/public`, "_blank")}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l9-9 9 9M4 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0h6" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -235,21 +308,22 @@ export default function EmpresasList() {
               <select
                 className="border rounded px-3 py-2"
                 value={empresaEdit.pais || ""}
-                onChange={ev => setEmpresaEdit({ ...empresaEdit, pais: ev.target.value })}
+                onChange={ev => setEmpresaEdit({ ...empresaEdit, pais: ev.target.value, region: "", zona: "" })}
                 required
               >
                 <option value="">Selecciona un país</option>
-                {paises.map(pais => (
+                {allPaises.map(pais => (
                   <option key={pais} value={pais}>{pais}</option>
                 ))}
               </select>
               <select
                 className="border rounded px-3 py-2"
                 value={empresaEdit.region || ""}
-                onChange={ev => setEmpresaEdit({ ...empresaEdit, region: ev.target.value })}
+                onChange={ev => setEmpresaEdit({ ...empresaEdit, region: ev.target.value, zona: "" })}
+                required
               >
                 <option value="">Selecciona una región</option>
-                {regiones.map(region => (
+                {allRegiones.map(region => (
                   <option key={region} value={region}>{region}</option>
                 ))}
               </select>
@@ -257,17 +331,19 @@ export default function EmpresasList() {
                 className="border rounded px-3 py-2"
                 value={empresaEdit.zona || ""}
                 onChange={ev => setEmpresaEdit({ ...empresaEdit, zona: ev.target.value })}
+                required
               >
                 <option value="">Selecciona una zona</option>
-                {zonas.map(zona => (
+                {allZonas.map(zona => (
                   <option key={zona} value={zona}>{zona}</option>
                 ))}
               </select>
-              <input
+              <textarea
                 className="border rounded px-3 py-2"
                 value={empresaEdit.textoBienvenida || ""}
                 onChange={ev => setEmpresaEdit({ ...empresaEdit, textoBienvenida: ev.target.value })}
                 placeholder="Texto de bienvenida"
+                rows={3}
               />
               <label className="flex items-center gap-2">
                 <input

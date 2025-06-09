@@ -28,6 +28,7 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.MapControllers();
 

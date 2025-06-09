@@ -2,6 +2,7 @@ using backend_dotnet.Data;
 using backend_dotnet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; // Asegúrate de tener esto
+using System.IO;
 
 namespace backend_dotnet.Controllers
 {
@@ -17,17 +18,48 @@ namespace backend_dotnet.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetEmpresas()
         {
             var empresas = await _context.Empresas.ToListAsync();
             return Ok(empresas);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEmpresa([FromBody] Empresa empresa)
+        public async Task<IActionResult> CrearEmpresa([FromForm] EmpresaCreateDto dto)
         {
+            string? logotipoUrl = null;
+
+            if (dto.Logotipo != null)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = Guid.NewGuid() + Path.GetExtension(dto.Logotipo.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await dto.Logotipo.CopyToAsync(stream);
+                }
+                logotipoUrl = $"/uploads/{fileName}";
+            }
+
+            var empresa = new Empresa
+            {
+                Nombre = dto.Nombre,
+                Pais = dto.Pais,
+                Region = dto.Region,
+                Zona = dto.Zona,
+                TextoBienvenida = dto.TextoBienvenida,
+                LogotipoUrl = logotipoUrl,
+                Activo = dto.Activo
+            };
+
+            // Guarda la empresa en la base de datos
             _context.Empresas.Add(empresa);
             await _context.SaveChangesAsync();
+
             return Ok(empresa);
         }
 

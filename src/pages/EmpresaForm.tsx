@@ -19,6 +19,7 @@ export default function EmpresaForm() {
     logotipo: null as File | null,
     imagenFondoLogin: null as File | null,
     imagenHeader: null as File | null,
+    activo: true, // <-- agrega esta línea
   });
   const [paises, setPaises] = useState<string[]>([]);
   const [regiones, setRegiones] = useState<string[]>([]);
@@ -82,17 +83,31 @@ export default function EmpresaForm() {
     }));
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const { nombre, pais, zona, region, textoBienvenida } = form;
-    const response = await fetch('http://localhost:5214/api/empresas', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, pais, zona, region, textoBienvenida }),
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("nombre", form.nombre);
+    formData.append("pais", form.pais);
+    formData.append("region", form.region);
+    formData.append("zona", form.zona);
+    formData.append("TextoBienvenida", form.textoBienvenida);
+    formData.append("activo", form.activo ? "true" : "false");
+    if (form.logotipo) formData.append("logotipo", form.logotipo);
+    if (form.imagenFondoLogin) formData.append("imagenFondoLogin", form.imagenFondoLogin);
+    if (form.imagenHeader) formData.append("imagenHeader", form.imagenHeader);
+
+    const res = await fetch("http://localhost:5214/api/empresas", {
+      method: "POST",
+      body: formData,
     });
-    if (response.ok) {
-      const nuevaEmpresa = await response.json();
-      navigate(`/empresas/${nuevaEmpresa.id}/public`);
+
+    if (res.ok) {
+      // Empresa creada correctamente, navega al listado
+      navigate("/empresas");
+    } else {
+      // Opcional: muestra el error
+      const error = await res.text();
+      alert("Error al crear empresa: " + error);
     }
   };
 
