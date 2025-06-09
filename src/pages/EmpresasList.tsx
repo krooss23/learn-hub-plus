@@ -105,14 +105,26 @@ export default function EmpresasList() {
 
   const handleSaveEdit = async () => {
     if (!empresaEdit) return;
+    const formData = new FormData();
+    formData.append("Nombre", empresaEdit.nombre);
+    formData.append("Pais", empresaEdit.pais);
+    formData.append("Region", empresaEdit.region);
+    formData.append("Zona", empresaEdit.zona);
+    formData.append("TextoBienvenida", empresaEdit.textoBienvenida);
+    formData.append("Activo", empresaEdit.activo ? "true" : "false");
+    if ((empresaEdit as any).logotipo) {
+      formData.append("Logotipo", (empresaEdit as any).logotipo);
+    }
+
     await fetch(`http://localhost:5214/api/empresas/${empresaEdit.id}`, {
-      method: 'PUT', // O PATCH según tu backend
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(empresaEdit),
+      method: 'PUT',
+      body: formData,
+      // No pongas headers, el navegador los pone automáticamente para FormData
     });
+
     setShowEditModal(false);
     setEmpresaEdit(null);
-    fetchEmpresas(); // Recarga la lista para reflejar los cambios
+    fetchEmpresas();
   };
 
   const handleDelete = async (id: number) => {
@@ -352,6 +364,17 @@ export default function EmpresasList() {
                   onChange={ev => setEmpresaEdit({ ...empresaEdit, activo: ev.target.checked })}
                 />
                 Activo
+              </label>
+              <label className="flex flex-col gap-1">
+                Logotipo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={ev => {
+                    const file = ev.target.files?.[0] || null;
+                    setEmpresaEdit(edit => edit ? { ...edit, logotipo: file } : edit);
+                  }}
+                />
               </label>
               <button
                 type="submit"

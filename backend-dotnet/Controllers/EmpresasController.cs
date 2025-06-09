@@ -54,11 +54,12 @@ namespace backend_dotnet.Controllers
                 TextoBienvenida = dto.TextoBienvenida,
                 LogotipoUrl = logotipoUrl,
                 Activo = dto.Activo
+                // ...otros campos...
             };
 
             // Guarda la empresa en la base de datos
-            _context.Empresas.Add(empresa);
-            await _context.SaveChangesAsync();
+            // _context.Empresas.Add(empresa);
+            // await _context.SaveChangesAsync();
 
             return Ok(empresa);
         }
