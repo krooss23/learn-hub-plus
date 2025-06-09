@@ -82,9 +82,27 @@ namespace backend_dotnet.Controllers
             empresaDb.TextoBienvenida = dto.TextoBienvenida;
             empresaDb.Activo = dto.Activo;
 
-            // Si hay nuevo logotipo, guárdalo igual que en POST
+            // Si hay nuevo logotipo, elimina el anterior y guarda el nuevo
             if (dto.Logotipo != null)
             {
+                // Elimina el archivo anterior si existe
+                if (!string.IsNullOrEmpty(empresaDb.LogotipoUrl))
+                {
+                    // Quita la barra inicial y usa Path.Combine para asegurar la ruta correcta
+                    var relativePath = empresaDb.LogotipoUrl.StartsWith("/")
+                        ? empresaDb.LogotipoUrl.Substring(1)
+                        : empresaDb.LogotipoUrl;
+
+                    var oldLogoPath = Path.Combine(_env.WebRootPath, relativePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
+
+                    Console.WriteLine($"Intentando borrar: {oldLogoPath} - Existe: {System.IO.File.Exists(oldLogoPath)}");
+
+                    if (System.IO.File.Exists(oldLogoPath))
+                    {
+                        System.IO.File.Delete(oldLogoPath);
+                    }
+                }
+
                 var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
                 if (!Directory.Exists(uploadsFolder))
                     Directory.CreateDirectory(uploadsFolder);
