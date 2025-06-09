@@ -1,5 +1,7 @@
 using backend_dotnet.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +30,7 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(); // Esto sirve wwwroot por defecto
 
 app.MapControllers();
 

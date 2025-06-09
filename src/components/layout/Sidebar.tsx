@@ -31,7 +31,7 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
 
   const menuItems = [
     { id: "home", label: "Inicio", icon: HomeIcon, path: "/dashboard", roles: ["estudiante", "profesor", "admin"] },
-    { id: "courses", label: "Mis Cursos", icon: BookIcon, path: "/courses", roles: ["estudiante", "profesor", "admin"] },
+    { id: "courses", label: "Mis Cursos", icon: BookIcon, path: "/courses", roles: ["estudiante", "profesor"] },
     { id: "calendar", label: "Calendario", icon: CalendarIcon, path: "/calendar", roles: ["estudiante", "profesor", "admin"] },
     { id: "assignments", label: "Tareas", icon: FileTextIcon, path: "/assignments", roles: ["estudiante", "profesor"] },
     { id: "messages", label: "Mensajes", icon: MessageSquareIcon, path: "/forum", roles: ["estudiante", "profesor", "admin"] },

@@ -1,7 +1,7 @@
 using backend_dotnet.Data;
 using backend_dotnet.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // Asegúrate de tener esto
+using Microsoft.EntityFrameworkCore;
 using System.IO;
 
 namespace backend_dotnet.Controllers
@@ -11,10 +11,12 @@ namespace backend_dotnet.Controllers
     public class EmpresasController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env; // Agrega este campo
 
-        public EmpresasController(AppDbContext context)
+        public EmpresasController(AppDbContext context, IWebHostEnvironment env) // Modifica el constructor
         {
             _context = context;
+            _env = env;
         }
 
         [HttpGet]
@@ -31,17 +33,19 @@ namespace backend_dotnet.Controllers
 
             if (dto.Logotipo != null)
             {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads"); // Usa _env
                 if (!Directory.Exists(uploadsFolder))
                     Directory.CreateDirectory(uploadsFolder);
 
-                var fileName = Guid.NewGuid() + Path.GetExtension(dto.Logotipo.FileName);
+                var extension = Path.GetExtension(dto.Logotipo.FileName); // .jpg, .png, etc.
+                var fileName = $"{Guid.NewGuid()}{extension}";
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
                 using (var stream = System.IO.File.Create(filePath))
                 {
                     await dto.Logotipo.CopyToAsync(stream);
                 }
+
                 logotipoUrl = $"/uploads/{fileName}";
             }
 
@@ -65,19 +69,37 @@ namespace backend_dotnet.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmpresa(int id, [FromBody] Empresa empresa)
+        public async Task<IActionResult> UpdateEmpresa(int id, [FromForm] EmpresaCreateDto dto)
         {
             var empresaDb = await _context.Empresas.FindAsync(id);
             if (empresaDb == null)
                 return NotFound();
 
-            empresaDb.Nombre = empresa.Nombre;
-            empresaDb.Pais = empresa.Pais;
-            empresaDb.Region = empresa.Region;
-            empresaDb.Zona = empresa.Zona;
-            empresaDb.TextoBienvenida = empresa.TextoBienvenida;
-            empresaDb.Activo = empresa.Activo;
-            // Agrega aquí otros campos si tienes más
+            empresaDb.Nombre = dto.Nombre;
+            empresaDb.Pais = dto.Pais;
+            empresaDb.Region = dto.Region;
+            empresaDb.Zona = dto.Zona;
+            empresaDb.TextoBienvenida = dto.TextoBienvenida;
+            empresaDb.Activo = dto.Activo;
+
+            // Si hay nuevo logotipo, guárdalo igual que en POST
+            if (dto.Logotipo != null)
+            {
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var extension = Path.GetExtension(dto.Logotipo.FileName);
+                var fileName = $"{Guid.NewGuid()}{extension}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    await dto.Logotipo.CopyToAsync(stream);
+                }
+
+                empresaDb.LogotipoUrl = $"/uploads/{fileName}";
+            }
 
             await _context.SaveChangesAsync();
             return Ok(empresaDb);
