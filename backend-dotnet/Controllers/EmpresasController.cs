@@ -49,5 +49,14 @@ namespace backend_dotnet.Controllers
             await _context.SaveChangesAsync();
             return Ok(empresaDb);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetEmpresa(int id)
+        {
+            var empresa = await _context.Empresas.FindAsync(id);
+            if (empresa == null)
+                return NotFound();
+            return Ok(empresa);
+        }
     }
 }

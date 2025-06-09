@@ -27,6 +27,7 @@ import UsersList from "./pages/UserList";
 import EditUser from "./pages/EditUser";
 import Empresas from "./pages/EmpresasList"; 
 import EmpresaForm from "./pages/EmpresaForm"; // Asegúrate de tener este componente
+import EmpresaPublic from "./pages/EmpresaPublic";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +88,7 @@ const App = () => (
               </MainLayout>
             }
           />
+          <Route path="/empresas/:id/public" element={<EmpresaPublic />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -30,7 +30,8 @@ export default function EmpresaForm() {
       body: JSON.stringify({ nombre, pais, textoBienvenida }),
     });
     if (response.ok) {
-      navigate("/empresas"); // Redirige al listado de empresas
+      const nuevaEmpresa = await response.json();
+      navigate(`/empresas/${nuevaEmpresa.id}/public`);
     }
   };
 
