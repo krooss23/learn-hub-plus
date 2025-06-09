@@ -60,6 +60,14 @@ export default function EmpresasList() {
     fetchEmpresas(); // Recarga la lista para reflejar los cambios
   };
 
+  const handleDelete = async (id: number) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar esta empresa?")) return;
+    await fetch(`http://localhost:5214/api/empresas/${id}`, {
+      method: "DELETE",
+    });
+    fetchEmpresas(); // Recarga la lista después de borrar
+  };
+
   return (
     <div className="p-6">
       {/* Filtros */}
@@ -189,7 +197,7 @@ export default function EmpresasList() {
                 <button
                   className="flex items-center gap-1 px-3 py-1.5 rounded bg-red-100 text-red-800 shadow-sm hover:bg-red-200 transition-all duration-150 active:scale-95"
                   title="Borrar"
-                  onClick={() => {/* tu lógica de borrado aquí */}}
+                  onClick={() => handleDelete(e.id)}
                 >
                   <XMarkIcon className="w-4 h-4" />
                 </button>

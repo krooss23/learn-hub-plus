@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduationCapIcon, PlusIcon, UserIcon, UsersIcon, BookIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const featuredVehicles = [
 	{ name: "Mercedes-Benz", img: "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d" },
@@ -20,6 +21,14 @@ const AdminDashboard = () => {
 		completionRate: 78
 	};
 	
+	const [empresas, setEmpresas] = useState([]);
+
+	useEffect(() => {
+		fetch("http://localhost:5214/api/empresas")
+			.then(res => res.json())
+			.then(setEmpresas);
+	}, []);
+
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -99,22 +108,30 @@ const AdminDashboard = () => {
 				</Card>
 			</div>
 			
-			{/* Vehículos Destacados */}
+			{/* Marcas */}
 			<Card>
 				<CardHeader>
 					<CardTitle>Marcas</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-						{featuredVehicles.map(vehicle => (
-							<div key={vehicle.name} className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col items-center p-2">
+						{empresas.map(empresa => (
+							<Link
+								key={empresa.id}
+								to={`/empresas/${empresa.id}/public`}
+								className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col items-center p-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg"
+								style={{ textDecoration: "none" }}
+							>
 								<img
-									src={vehicle.img}
-									alt={vehicle.name}
-									className="w-full h-40 object-cover rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg"
+									src={empresa.logoUrl || "/logo-placeholder.png"}
+									alt={empresa.nombre}
+									className="w-full h-40 object-cover rounded-lg"
+									onError={e => {
+										(e.currentTarget as HTMLImageElement).src = "/images/INClogo.png";
+									}}
 								/>
-								<div className="py-3 text-center font-semibold text-gray-700">{vehicle.name}</div>
-							</div>
+								<div className="py-3 text-center font-semibold text-gray-700">{empresa.nombre}</div>
+							</Link>
 						))}
 					</div>
 				</CardContent>

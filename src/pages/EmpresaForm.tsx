@@ -5,6 +5,8 @@ export default function EmpresaForm() {
   const [form, setForm] = useState({
     nombre: "",
     pais: "",
+    region: "",
+    zona: "",
     textoBienvenida: "",
     logotipo: null as File | null,
     imagenFondoLogin: null as File | null,
@@ -22,12 +24,12 @@ export default function EmpresaForm() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Solo envía los campos que tu backend espera
-    const { nombre, pais, textoBienvenida } = form;
+    // Incluye region y zona en el body
+    const { nombre, pais, region, zona, textoBienvenida } = form;
     const response = await fetch('http://localhost:5214/api/empresas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, pais, textoBienvenida }),
+      body: JSON.stringify({ nombre, pais, region, zona, textoBienvenida }),
     });
     if (response.ok) {
       const nuevaEmpresa = await response.json();
@@ -68,6 +70,26 @@ export default function EmpresaForm() {
             <option value="Colombia">Colombia</option>
             {/* Agrega más países si lo deseas */}
           </select>
+        </div>
+        <div>
+          <label className="block text-gray-700 mb-1">Región</label>
+          <input
+            name="region"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
+            value={form.region}
+            onChange={handleChange}
+            placeholder="Región"
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 mb-1">Zona</label>
+          <input
+            name="zona"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary transition"
+            value={form.zona}
+            onChange={handleChange}
+            placeholder="Zona"
+          />
         </div>
         <div>
           <label className="block text-gray-700 mb-1">Texto de bienvenida</label>

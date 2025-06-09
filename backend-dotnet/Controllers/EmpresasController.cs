@@ -58,5 +58,17 @@ namespace backend_dotnet.Controllers
                 return NotFound();
             return Ok(empresa);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEmpresa(int id)
+        {
+            var empresa = await _context.Empresas.FindAsync(id);
+            if (empresa == null)
+                return NotFound();
+
+            _context.Empresas.Remove(empresa);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
