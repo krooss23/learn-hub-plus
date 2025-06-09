@@ -86,15 +86,15 @@ export default function EmpresaForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("nombre", form.nombre);
-    formData.append("pais", form.pais);
-    formData.append("region", form.region);
-    formData.append("zona", form.zona);
+    formData.append("Nombre", form.nombre);
+    formData.append("Pais", form.pais);
+    formData.append("Region", form.region);
+    formData.append("Zona", form.zona);
     formData.append("TextoBienvenida", form.textoBienvenida);
-    formData.append("activo", form.activo ? "true" : "false");
-    if (form.logotipo) formData.append("logotipo", form.logotipo);
-    if (form.imagenFondoLogin) formData.append("imagenFondoLogin", form.imagenFondoLogin);
-    if (form.imagenHeader) formData.append("imagenHeader", form.imagenHeader);
+    formData.append("Activo", form.activo ? "true" : "false");
+    if (form.logotipo) formData.append("Logotipo", form.logotipo);
+    if (form.imagenFondoLogin) formData.append("ImagenFondoLogin", form.imagenFondoLogin);
+    if (form.imagenHeader) formData.append("ImagenHeader", form.imagenHeader);
 
     const res = await fetch("http://localhost:5214/api/empresas", {
       method: "POST",

@@ -58,8 +58,8 @@ namespace backend_dotnet.Controllers
             };
 
             // Guarda la empresa en la base de datos
-            // _context.Empresas.Add(empresa);
-            // await _context.SaveChangesAsync();
+            _context.Empresas.Add(empresa);
+            await _context.SaveChangesAsync();
 
             return Ok(empresa);
         }

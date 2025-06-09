@@ -119,7 +119,7 @@ export default function EmpresasList() {
     await fetch(`http://localhost:5214/api/empresas/${empresaEdit.id}`, {
       method: 'PUT',
       body: formData,
-      // No pongas headers, el navegador los pone automáticamente para FormData
+      
     });
 
     setShowEditModal(false);
