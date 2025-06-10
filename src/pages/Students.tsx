@@ -30,8 +30,8 @@ const Students = () => {
     empresa: "",
     concesionario: "",
     tipo: "",
-    senceNet: "", // <-- Nuevo campo
-    email: "", // <-- AGREGA ESTA LÍNEA
+    senceNet: "", 
+    email: "", 
     password: "",
     confirmPassword: "",
   });
@@ -39,6 +39,8 @@ const Students = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [empresas, setEmpresas] = useState<{ id: number, nombre: string }[]>([]);
+  const [allCountries, setAllCountries] = useState<string[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:5214/api/users")
@@ -48,6 +50,18 @@ const Students = () => {
         const estudiantes = data.filter((u: any) => u.rol === "estudiante");
         setStudentsList(estudiantes);
       });
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:5214/api/empresas")
+      .then(res => res.json())
+      .then(data => setEmpresas(data));
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:5214/api/regiones")
+      .then(res => res.json())
+      .then(data => setAllCountries(data));
   }, []);
 
   // Filter students based on search query and filters
@@ -69,7 +83,6 @@ const Students = () => {
   });
 
   // Get unique values for filters
-  const countries = [...new Set(studentsList.map(s => s.pais))];
   const regions = [...new Set(studentsList.map(s => s.region))];
   const cities = [...new Set(studentsList.map(s => s.ciudad))];
   const dealerships = [...new Set(studentsList.map(s => s.concesionario))];
@@ -144,8 +157,8 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los países</SelectItem>
-                {countries.map(country => (
-                  <SelectItem key={`${country ?? "country"}-${country}`} value={country}>{country}</SelectItem>
+                {allCountries.filter(Boolean).map(country => (
+                  <SelectItem key={country} value={country}>{country}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -370,7 +383,7 @@ const Students = () => {
                     <SelectValue placeholder="Selecciona país" />
                   </SelectTrigger>
                   <SelectContent>
-                    {countries.filter(Boolean).map(country => (
+                    {allCountries.filter(Boolean).map(country => (
                       <SelectItem key={country} value={country}>{country}</SelectItem>
                     ))}
                   </SelectContent>
@@ -422,11 +435,20 @@ const Students = () => {
               </div>
               <div>
                 <label className="block mb-1">Empresa</label>
-                <Input
+                <Select
                   value={newStudent.empresa}
-                  onChange={e => setNewStudent({ ...newStudent, empresa: e.target.value })}
+                  onValueChange={value => setNewStudent({ ...newStudent, empresa: value })}
                   required
-                />
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona empresa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {empresas.map(e => (
+                      <SelectItem key={e.id} value={e.nombre}>{e.nombre}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="block mb-1">Concesionario</label>
