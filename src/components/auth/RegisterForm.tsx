@@ -33,7 +33,6 @@ const RegisterForm = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Cambia la URL si tu backend está en otro puerto
     fetch("http://localhost:5214/api/empresas")
       .then((res) => res.json())
       .then((data) => {

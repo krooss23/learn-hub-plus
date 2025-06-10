@@ -575,7 +575,7 @@ const Students = () => {
                 </div>
               </div>
               
-              <div className="mt-4">
+              <div className="mt-4 flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -587,6 +587,17 @@ const Students = () => {
                 >
                   <UserIcon className="h-4 w-4 mr-2" />
                   Ver perfil
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    // Aquí puedes abrir un modal o lógica para asignar cursos, empresa, etc.
+                    // Por ahora no hace nada.
+                  }}
+                >
+                  Asignar
                 </Button>
               </div>
             </CardContent>
