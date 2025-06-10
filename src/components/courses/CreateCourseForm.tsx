@@ -14,7 +14,9 @@ const CreateCourseForm = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [schedule, setSchedule] = useState("");
+  const [professor, setProfessor] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,8 +59,9 @@ const CreateCourseForm = () => {
         descripcion: description,
         categoria: category,
         fechaInicio: startDate,
+        fechaTermino: endDate,
         horario: schedule,
-        profesor: "Nombre del profesor", // <-- Aquí agregas el campo
+        profesor: professor,
         // imagenUrl: aquí puedes poner la URL si implementas subida de imágenes
       }),
     })
@@ -154,15 +157,39 @@ const CreateCourseForm = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="schedule">Horario</Label>
-              <Input
-                id="schedule"
-                type="text"
-                placeholder="Ej: Lunes y Miércoles, 15:00-17:00"
-                value={schedule}
-                onChange={(e) => setSchedule(e.target.value)}
-              />
+              <Label htmlFor="endDate">Fecha de Término</Label>
+              <div className="relative">
+                <Input
+                  id="endDate"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+                <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+              </div>
             </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="schedule">Horario</Label>
+            <Input
+              id="schedule"
+              type="text"
+              placeholder="Ej: Lunes y Miércoles, 15:00-17:00"
+              value={schedule}
+              onChange={(e) => setSchedule(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="professor">Nombre de Profesor</Label>
+            <Input
+              id="professor"
+              type="text"
+              placeholder="Ej: Juan Pérez"
+              value={professor}
+              onChange={(e) => setProfessor(e.target.value)}
+            />
           </div>
           
           <div className="space-y-2">
