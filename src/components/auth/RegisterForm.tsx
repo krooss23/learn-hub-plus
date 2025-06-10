@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,11 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 const countries = [
   "Chile", "Argentina", "Perú", "Colombia", "México", "España", "Estados Unidos"
 ];
+
+type Empresa = {
+  id: number;
+  nombre: string;
+};
 
 const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -23,7 +28,23 @@ const RegisterForm = () => {
   const [role, setRole] = useState("estudiante");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [empresaId, setEmpresaId] = useState<string>("");
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Cambia la URL si tu backend está en otro puerto
+    fetch("http://localhost:5214/api/empresas")
+      .then((res) => res.json())
+      .then((data) => {
+        // Si la respuesta es un array directo
+        if (Array.isArray(data)) setEmpresas(data);
+        // Si la respuesta es { data: [...] }
+        else if (data.data && Array.isArray(data.data)) setEmpresas(data.data);
+        else setEmpresas([]);
+      })
+      .catch(() => setEmpresas([]));
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +72,7 @@ const RegisterForm = () => {
         email: email,
         password: password,
         rol: role,
+        empresaId: empresaId ? Number(empresaId) : null,
       }),
     })
       .then(res => {
@@ -69,6 +91,7 @@ const RegisterForm = () => {
         setPassword("");
         setConfirmPassword("");
         setRole("estudiante");
+        setEmpresaId("");
       })
       .catch(() => {
         setIsLoading(false);
@@ -90,7 +113,6 @@ const RegisterForm = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Agrupa los campos de a dos en filas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="name">Nombre</Label>
@@ -163,7 +185,8 @@ const RegisterForm = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div>
+            {/* Correo y Empresa en la misma fila */}
+            <div className="flex flex-col">
               <Label htmlFor="email">Correo Electrónico</Label>
               <Input
                 id="email"
@@ -173,6 +196,21 @@ const RegisterForm = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+            </div>
+            <div className="flex flex-col">
+              <Label htmlFor="empresa">Empresa</Label>
+              <Select value={empresaId} onValueChange={setEmpresaId} required>
+                <SelectTrigger>
+                  <SelectValue placeholder={empresas.length === 0 ? "No hay empresas registradas" : "Selecciona una empresa"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {empresas.map((empresa) => (
+                    <SelectItem key={empresa.id} value={empresa.id.toString()}>
+                      {empresa.nombre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="password">Contraseña</Label>
