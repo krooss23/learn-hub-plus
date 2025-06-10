@@ -8,7 +8,7 @@ import { SearchIcon, Flag, MapPin, Building, Briefcase, UserIcon } from "lucide-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { toast } from "@/components/ui/use-toast"; // Asegúrate de tener este hook o usa tu sistema de notificaciones
+import { toast } from "@/components/ui/use-toast";
 
 const Students = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,8 +30,8 @@ const Students = () => {
     empresa: "",
     concesionario: "",
     tipo: "",
-    senceNet: "", 
-    email: "", 
+    senceNet: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
@@ -41,12 +41,15 @@ const Students = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [empresas, setEmpresas] = useState<{ id: number, nombre: string }[]>([]);
   const [allCountries, setAllCountries] = useState<string[]>([]);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assigningStudent, setAssigningStudent] = useState<any>(null);
+  const [allCourses, setAllCourses] = useState<{ id: number, nombre: string }[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<number[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:5214/api/users")
       .then(res => res.json())
       .then(data => {
-        // Solo usuarios con rol estudiante
         const estudiantes = data.filter((u: any) => u.rol === "estudiante");
         setStudentsList(estudiantes);
       });
@@ -64,14 +67,14 @@ const Students = () => {
       .then(data => setAllCountries(data));
   }, []);
 
-  // Filter students based on search query and filters
+  // Filtros
   const filteredStudents = studentsList.filter(student => {
     const fullName = `${student.nombre} ${student.apellidos}`;
-    const matchesSearch = 
-      fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch =
+      fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (student.email && student.email.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const matchesFilters = 
+    const matchesFilters =
       (filters.pais === "all" ? true : student.pais === filters.pais) &&
       (filters.region === "all" ? true : student.region === filters.region) &&
       (filters.ciudad === "all" ? true : student.ciudad === filters.ciudad) &&
@@ -82,13 +85,12 @@ const Students = () => {
     return matchesSearch && matchesFilters;
   });
 
-  // Get unique values for filters
+  // Valores únicos para filtros
   const regions = [...new Set(studentsList.map(s => s.region))];
   const cities = [...new Set(studentsList.map(s => s.ciudad))];
   const dealerships = [...new Set(studentsList.map(s => s.concesionario))];
   const companies = [...new Set(studentsList.map(s => s.empresa))];
 
-  // Get initials for avatar fallback
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -117,6 +119,16 @@ const Students = () => {
     setSearchQuery("");
   };
 
+  // CORREGIDO: fetch a /api/courses (no /api/cursos)
+  const openAssignModal = (student: any) => {
+    setAssigningStudent(student);
+    setShowAssignModal(true);
+    fetch("http://localhost:5214/api/courses")
+      .then(res => res.json())
+      .then(data => setAllCourses(data));
+    setSelectedCourses([]);
+  };
+
   return (
     <MainLayout>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -128,8 +140,8 @@ const Students = () => {
         <div className="flex flex-col lg:flex-row gap-4 mb-4">
           <div className="relative flex-grow">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Buscar estudiantes..." 
+            <Input
+              placeholder="Buscar estudiantes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -148,8 +160,8 @@ const Students = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           <div className="flex items-center gap-2">
             <Flag className="h-4 w-4 text-muted-foreground" />
-            <Select 
-              value={filters.pais} 
+            <Select
+              value={filters.pais}
               onValueChange={(value) => handleFilterChange("pais", value)}
             >
               <SelectTrigger>
@@ -166,8 +178,8 @@ const Students = () => {
 
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
-            <Select 
-              value={filters.region} 
+            <Select
+              value={filters.region}
               onValueChange={(value) => handleFilterChange("region", value)}
             >
               <SelectTrigger>
@@ -184,8 +196,8 @@ const Students = () => {
 
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
-            <Select 
-              value={filters.ciudad} 
+            <Select
+              value={filters.ciudad}
               onValueChange={(value) => handleFilterChange("ciudad", value)}
             >
               <SelectTrigger>
@@ -202,8 +214,8 @@ const Students = () => {
 
           <div className="flex items-center gap-2">
             <Building className="h-4 w-4 text-muted-foreground" />
-            <Select 
-              value={filters.concesionario} 
+            <Select
+              value={filters.concesionario}
               onValueChange={(value) => handleFilterChange("concesionario", value)}
             >
               <SelectTrigger>
@@ -220,8 +232,8 @@ const Students = () => {
 
           <div className="flex items-center gap-2">
             <Building className="h-4 w-4 text-muted-foreground" />
-            <Select 
-              value={filters.empresa} 
+            <Select
+              value={filters.empresa}
               onValueChange={(value) => handleFilterChange("empresa", value)}
             >
               <SelectTrigger>
@@ -238,8 +250,8 @@ const Students = () => {
 
           <div className="flex items-center gap-2">
             <Briefcase className="h-4 w-4 text-muted-foreground" />
-            <Select 
-              value={filters.tipo} 
+            <Select
+              value={filters.tipo}
               onValueChange={(value) => handleFilterChange("tipo", value)}
             >
               <SelectTrigger>
@@ -532,6 +544,57 @@ const Students = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Modal para asignar cursos */}
+      <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
+        <DialogContent className="max-w-md p-8 rounded-xl shadow-2xl bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold mb-2 text-center">
+              Asignar cursos a <span className="text-primary">{assigningStudent?.nombre} {assigningStudent?.apellidos}</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mb-6">
+            <label className="block mb-2 font-semibold text-gray-700">Selecciona los cursos</label>
+            <select
+              multiple
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary-500 min-h-[120px] bg-gray-50 text-gray-800"
+              value={selectedCourses.map(String)}
+              onChange={e => {
+                const options = Array.from(e.target.selectedOptions, option => Number(option.value));
+                setSelectedCourses(options);
+              }}
+            >
+              {allCourses.map(curso => (
+                <option key={curso.id} value={curso.id} className="py-2">
+                  {curso.nombre}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 mt-2">Mantén presionada la tecla Ctrl (Windows) o Cmd (Mac) para seleccionar varios cursos.</p>
+          </div>
+          <DialogFooter className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setShowAssignModal(false)}>
+              Cancelar
+            </Button>
+            <Button
+              className="bg-primary text-white font-semibold px-6"
+              onClick={async () => {
+                if (!assigningStudent) return;
+                await fetch(`http://localhost:5214/api/users/${assigningStudent.id}/courses`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(selectedCourses),
+                });
+                setShowAssignModal(false);
+                toast({ title: "Cursos asignados correctamente" });
+              }}
+              disabled={selectedCourses.length === 0}
+            >
+              Asignar cursos
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Students Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredStudents.map(student => (
@@ -574,7 +637,7 @@ const Students = () => {
                   <p>{student.completedCourses} de {student.enrolledCourses}</p>
                 </div>
               </div>
-              
+
               <div className="mt-4 flex gap-2">
                 <Button
                   variant="outline"
@@ -592,10 +655,7 @@ const Students = () => {
                   variant="default"
                   size="sm"
                   className="w-full"
-                  onClick={() => {
-                    // Aquí puedes abrir un modal o lógica para asignar cursos, empresa, etc.
-                    // Por ahora no hace nada.
-                  }}
+                  onClick={() => openAssignModal(student)}
                 >
                   Asignar
                 </Button>

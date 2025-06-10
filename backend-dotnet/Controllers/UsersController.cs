@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using backend_dotnet.Data;
 using backend_dotnet.Models;
 using BCrypt.Net;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend_dotnet.Controllers
 {
@@ -100,6 +101,31 @@ namespace backend_dotnet.Controllers
 
             _context.SaveChanges();
             return Ok(user);
+        }
+
+        [HttpPost("{userId}/courses")]
+        public async Task<IActionResult> AssignCourses(int userId, [FromBody] List<int> courseIds)
+        {
+            var user = await _context.Users
+                .Include(u => u.UserCourses)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null) return NotFound();
+
+            // Elimina asignaciones previas que no estén en la nueva lista
+            user.UserCourses.RemoveAll(uc => !courseIds.Contains(uc.CourseId));
+
+            // Agrega los nuevos cursos
+            foreach (var courseId in courseIds)
+            {
+                if (!user.UserCourses.Any(uc => uc.CourseId == courseId))
+                {
+                    user.UserCourses.Add(new UserCourse { UserId = userId, CourseId = courseId });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 

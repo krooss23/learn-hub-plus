@@ -10,5 +10,6 @@ namespace backend_dotnet.Models
         public string Horario { get; set; } = string.Empty;
         public string? ImagenUrl { get; set; } // Para guardar la URL de la imagen si la implementas después
         public string Profesor { get; set; } = string.Empty;
+        public List<UserCourse> UserCourses { get; set; } = new();
     }
 }
