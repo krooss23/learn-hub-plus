@@ -139,6 +139,7 @@ const ManageCourse = () => {
       title: "Curso actualizado",
       description: "Los cambios han sido guardados correctamente.",
     });
+    navigate("/manage-courses"); // Redirige después de guardar
   };
 
   const handleAddModule = () => {
@@ -248,10 +249,10 @@ const ManageCourse = () => {
   return (
     <MainLayout>
       <div className="mb-6">
-        <Link to={`/course/${id}`}>
+        <Link to="/manage-courses">
           <Button variant="ghost" size="sm" className="mb-2">
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
-            Volver al curso
+            Volver a cursos
           </Button>
         </Link>
       </div>

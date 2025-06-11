@@ -43,7 +43,7 @@ const Students = () => {
   const [allCountries, setAllCountries] = useState<string[]>([]);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assigningStudent, setAssigningStudent] = useState<any>(null);
-  const [allCourses, setAllCourses] = useState<{ id: number, nombre: string }[]>([]);
+  const [allCourses, setAllCourses] = useState<{ id: number, nombre: string, categoria: string }[]>([]);
   const [selectedCourses, setSelectedCourses] = useState<number[]>([]);
 
   useEffect(() => {
@@ -563,11 +563,13 @@ const Students = () => {
                 setSelectedCourses(options);
               }}
             >
-              {allCourses.map(curso => (
-                <option key={curso.id} value={curso.id} className="py-2">
-                  {curso.nombre}
-                </option>
-              ))}
+              {allCourses
+                .filter(curso => curso.categoria === assigningStudent?.tipo)
+                .map(curso => (
+                  <option key={curso.id} value={curso.id} className="py-2">
+                    {curso.nombre}
+                  </option>
+                ))}
             </select>
             <p className="text-xs text-gray-500 mt-2">Mantén presionada la tecla Ctrl (Windows) o Cmd (Mac) para seleccionar varios cursos.</p>
           </div>
