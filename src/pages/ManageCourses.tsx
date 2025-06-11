@@ -20,7 +20,7 @@ const ManageCourses = () => {
     ciudad: "",
     concesionario: "",
     empresa: "",
-    categoria: "", // Cambiado de tipo a categoria
+    categoria: "", 
   });
 
   // Cargar cursos reales desde la API
@@ -33,16 +33,18 @@ const ManageCourses = () => {
           title: course.nombre || course.title,
           instructor: course.profesor || course.instructor,
           coverImage: course.imagenUrl || course.coverImage,
-          category: course.categoria || course.category, // Asegúrate de que esto sea correcto
+          category: course.categoria || course.category, 
           students: course.estudiantes || course.students,
           startDate: course.fechaInicio || course.startDate,
+          endDate: course.fechaTermino || course.endDate,
           status: course.estado || course.status,
           pais: course.pais,
           region: course.region,
           ciudad: course.ciudad,
           concesionario: course.concesionario,
           empresa: course.empresa,
-          categoria: course.categoria || course.category, // Nuevo campo para filtro
+          empresaNombre: course.empresaNombre, // <-- AGREGA ESTA LÍNEA
+          categoria: course.categoria || course.category, 
         }));
         setCourses(mapped);
       })
@@ -55,7 +57,7 @@ const ManageCourses = () => {
   const cities = [...new Set(courses.map(c => c.ciudad).filter(Boolean))];
   const dealerships = [...new Set(courses.map(c => c.concesionario).filter(Boolean))];
   const companies = [...new Set(courses.map(c => c.empresa).filter(Boolean))];
-  const categories = [...new Set(courses.map(c => c.categoria).filter(Boolean))]; // <-- Cambiado aquí
+  const categories = [...new Set(courses.map(c => c.categoria).filter(Boolean))]; 
 
   // Filtrar cursos igual que hacías con allCourses
   const filteredCourses = courses.filter(course => {
@@ -314,14 +316,14 @@ const ManageCourses = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Inicio</p>
-                      {/* Fecha solo con día (sin hora) */}
                       <p className="text-sm">{course.startDate?.split("T")[0]}</p>
+                      <p className="text-sm text-muted-foreground mt-2">Término</p>
+                      <p className="text-sm">{course.endDate?.split("T")[0]}</p>
                     </div>
-                  </div>
-                  
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <Badge variant="secondary">{course.pais}</Badge>
-                    <Badge variant="outline" className="capitalize">{course.tipo}</Badge>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Empresa</p>
+                      <p className="text-sm">{course.empresaNombre}</p>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using backend_dotnet.Data;
 using backend_dotnet.Models;
-using Microsoft.EntityFrameworkCore; // Agregado para usar Include()
-
+using Microsoft.EntityFrameworkCore; 
 namespace backend_dotnet.Controllers
 {
     [ApiController]
@@ -27,6 +26,11 @@ namespace backend_dotnet.Controllers
         [HttpPost]
         public IActionResult CreateCourse(Course course)
         {
+            // Buscar la empresa por el id recibido
+            var empresa = _context.Empresas.Find(course.EmpresaId);
+            // Guardar el nombre de la empresa en el curso
+            course.EmpresaNombre = empresa?.Nombre ?? "";
+
             _context.Courses.Add(course);
             _context.SaveChanges();
             return Ok(course);

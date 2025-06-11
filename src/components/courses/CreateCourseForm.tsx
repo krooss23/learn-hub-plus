@@ -23,6 +23,8 @@ const CreateCourseForm = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState("");
+  const [companies, setCompanies] = useState<{ id: string, nombre: string }[]>([]);
+  const [company, setCompany] = useState(""); // Aquí guardarás el id
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -30,6 +32,10 @@ const CreateCourseForm = () => {
     fetch("http://localhost:5214/api/categories")
       .then(res => res.json())
       .then(data => setCategories(data));
+    // Cambia el endpoint y mapea los datos
+    fetch("http://localhost:5214/api/empresas")
+      .then(res => res.json())
+      .then(data => setCompanies(data.map((c: any) => ({ id: c.id, nombre: c.nombre }))));
   }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +55,7 @@ const CreateCourseForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title || !description || !category) {
+    if (!title || !description || !category || !company) {
       toast({
         title: "Campos incompletos",
         description: "Por favor completa todos los campos requeridos",
@@ -67,6 +73,7 @@ const CreateCourseForm = () => {
         nombre: title,
         descripcion: description,
         categoria: category,
+        empresaId: company, // Usa el id aquí
         fechaInicio: startDate,
         fechaTermino: endDate,
         horario: schedule,
@@ -231,6 +238,28 @@ const CreateCourseForm = () => {
             )}
             {categories.length === 0 && (
               <p className="text-sm text-muted-foreground mt-1">No hay categorías registradas</p>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="company">Empresa *</Label>
+            <Select
+              value={company}
+              onValueChange={setCompany}
+              required
+              disabled={companies.length === 0}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona una empresa" />
+              </SelectTrigger>
+              <SelectContent>
+                {companies.map(emp => (
+                  <SelectItem key={emp.id} value={emp.id}>{emp.nombre}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {companies.length === 0 && (
+              <p className="text-sm text-muted-foreground mt-1">No hay empresas registradas</p>
             )}
           </div>
           
