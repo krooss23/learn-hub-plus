@@ -45,6 +45,7 @@ const Students = () => {
   const [assigningStudent, setAssigningStudent] = useState<any>(null);
   const [allCourses, setAllCourses] = useState<{ id: number, nombre: string, categoria: string }[]>([]);
   const [selectedCourses, setSelectedCourses] = useState<number[]>([]);
+  const [categories, setCategories] = useState<string[]>([]); // <-- NUEVO
 
   useEffect(() => {
     fetch("http://localhost:5214/api/users")
@@ -65,6 +66,12 @@ const Students = () => {
     fetch("http://localhost:5214/api/regiones")
       .then(res => res.json())
       .then(data => setAllCountries(data));
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:5214/api/categories")
+      .then(res => res.json())
+      .then(data => setCategories(data));
   }, []);
 
   // Filtros
@@ -119,7 +126,6 @@ const Students = () => {
     setSearchQuery("");
   };
 
-  // CORREGIDO: fetch a /api/courses (no /api/cursos)
   const openAssignModal = (student: any) => {
     setAssigningStudent(student);
     setShowAssignModal(true);
@@ -259,9 +265,9 @@ const Students = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los tipos</SelectItem>
-                <SelectItem value="tecnico">Técnico</SelectItem>
-                <SelectItem value="asesor">Asesor</SelectItem>
-                <SelectItem value="ventas">Ventas</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -412,9 +418,9 @@ const Students = () => {
                     <SelectValue placeholder="Selecciona tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="tecnico">Técnico</SelectItem>
-                    <SelectItem value="asesor">Asesor</SelectItem>
-                    <SelectItem value="ventas">Ventas</SelectItem>
+                    {categories.map(cat => (
+                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -564,7 +570,9 @@ const Students = () => {
               }}
             >
               {allCourses
-                .filter(curso => curso.categoria === assigningStudent?.tipo)
+                .filter(curso =>
+                  curso.categoria?.toLowerCase() === assigningStudent?.tipo?.toLowerCase()
+                )
                 .map(curso => (
                   <option key={curso.id} value={curso.id} className="py-2">
                     {curso.nombre}
