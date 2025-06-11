@@ -19,6 +19,7 @@ const ManageCourse = () => {
   // Mock course data
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [students, setStudents] = useState<any[]>([]);
 
   useEffect(() => {
     // Mock API call to fetch course details
@@ -120,6 +121,17 @@ const ManageCourse = () => {
       setCourse(mockCourse);
       setLoading(false);
     }, 500);
+  }, [id]);
+
+  useEffect(() => {
+    // Cargar detalles del curso (puedes mantener tu lógica actual)
+    // ...
+
+    // Cargar estudiantes asignados al curso
+    fetch(`http://localhost:5214/api/courses/${id}/students`)
+      .then(res => res.json())
+      .then(data => setStudents(data))
+      .catch(err => setStudents([]));
   }, [id]);
 
   const handleSave = () => {
@@ -301,7 +313,30 @@ const ManageCourse = () => {
         <TabsContent value="students">
           <Card>
             <CardContent className="p-6">
-              <StudentsTable students={course.students} />
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 text-center font-semibold">Nombre</th>
+                    <th className="px-4 py-2 text-center font-semibold">Email</th>
+                    <th className="px-4 py-2 text-center font-semibold">Empresa</th>
+                    <th className="px-4 py-2 text-center font-semibold">Progreso</th>
+                    <th className="px-4 py-2 text-center font-semibold">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map(student => (
+                    <tr key={student.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-2 text-center">{student.nombre}</td>
+                      <td className="px-4 py-2 text-center">{student.email}</td>
+                      <td className="px-4 py-2 text-center">{student.empresa}</td>
+                      <td className="px-4 py-2 text-center">{student.progreso || "%"}</td>
+                      <td className="px-4 py-2 text-center">
+                        <button className="text-blue-600 hover:underline">Ver detalles</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </CardContent>
           </Card>
         </TabsContent>

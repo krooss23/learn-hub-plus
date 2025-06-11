@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using backend_dotnet.Data;
 using backend_dotnet.Models;
+using Microsoft.EntityFrameworkCore; // Agregado para usar Include()
 
 namespace backend_dotnet.Controllers
 {
@@ -54,6 +55,24 @@ namespace backend_dotnet.Controllers
             _context.SaveChanges();
 
             return NoContent();
+        }
+
+        [HttpGet("{courseId}/students")]
+        public IActionResult GetStudentsByCourse(int courseId)
+        {
+            var students = _context.UserCourses
+                .Where(uc => uc.CourseId == courseId && uc.User != null)
+                .Include(uc => uc.User)
+                .Select(uc => new {
+                    Id = uc.User!.Id,
+                    Nombre = uc.User!.Nombre,
+                    Email = uc.User!.Email,
+                    Empresa = uc.User!.Empresa ?? "",
+                    Progreso = "" // o elimina esta línea si no la necesitas
+                })
+                .ToList();
+
+            return Ok(students);
         }
     }
 }
