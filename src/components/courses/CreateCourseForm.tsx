@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,8 +20,17 @@ const CreateCourseForm = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch("http://localhost:5214/api/categories")
+      .then(res => res.json())
+      .then(data => setCategories(data));
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -123,23 +132,106 @@ const CreateCourseForm = () => {
             <Label htmlFor="category">Categoría *</Label>
             <Select
               value={category}
-              onValueChange={setCategory}
+              onValueChange={(val) => {
+                if (val === "__add__") {
+                  setShowNewCategory(true);
+                  setCategory("");
+                } else {
+                  setCategory(val);
+                  setShowNewCategory(false);
+                }
+              }}
               required
+              disabled={categories.length === 0 && !showNewCategory}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona una categoría" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="matematicas">Matemáticas</SelectItem>
-                <SelectItem value="ciencias">Ciencias</SelectItem>
-                <SelectItem value="historia">Historia</SelectItem>
-                <SelectItem value="literatura">Literatura</SelectItem>
-                <SelectItem value="idiomas">Idiomas</SelectItem>
-                <SelectItem value="tecnologia">Tecnología</SelectItem>
-                <SelectItem value="artes">Artes</SelectItem>
-                <SelectItem value="otros">Otros</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+                <SelectItem value="__add__" className="text-primary font-semibold">
+                  + Agregar nueva categoría
+                </SelectItem>
               </SelectContent>
             </Select>
+            {(showNewCategory || categories.length === 0) && (
+              <div className="flex gap-2 mt-2">
+                <Input
+                  placeholder="Nueva categoría"
+                  value={newCategory}
+                  onChange={e => setNewCategory(e.target.value)}
+                  autoFocus
+                />
+                <Button
+                  type="button"
+                  onClick={async () => {
+                    const trimmed = newCategory.trim();
+                    if (!trimmed) {
+                      toast({
+                        title: "Error",
+                        description: "El nombre de la categoría es obligatorio",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    if (categories.includes(trimmed)) {
+                      toast({
+                        title: "Error",
+                        description: "La categoría ya existe",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    try {
+                      // Log para depuración
+                      console.log("Enviando categoría:", { nombre: trimmed });
+                      const res = await fetch("http://localhost:5214/api/categories", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(trimmed), // Solo el string, no un objeto
+                      });
+                      if (!res.ok) {
+                        const msg = await res.text();
+                        throw new Error(msg);
+                      }
+                      // Recarga categorías desde el backend
+                      const catsRes = await fetch("http://localhost:5214/api/categories");
+                      const cats = await catsRes.json();
+                      setCategories(cats);
+                      setCategory(trimmed);
+                      setNewCategory("");
+                      setShowNewCategory(false);
+                      toast({ title: "Categoría agregada" });
+                    } catch (err: any) {
+                      toast({
+                        title: "Error",
+                        description: err.message || "No se pudo agregar la categoría",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                >
+                  Agregar
+                </Button>
+                {categories.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setShowNewCategory(false);
+                      setNewCategory("");
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                )}
+              </div>
+            )}
+            {categories.length === 0 && (
+              <p className="text-sm text-muted-foreground mt-1">No hay categorías registradas</p>
+            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

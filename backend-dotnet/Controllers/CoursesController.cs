@@ -74,5 +74,15 @@ namespace backend_dotnet.Controllers
 
             return Ok(students);
         }
+
+        [HttpGet("categories")]
+        public IActionResult GetCategories()
+        {
+            var categories = _context.Courses
+                .Select(c => c.Categoria)
+                .Distinct()
+                .ToList();
+            return Ok(categories);
+        }
     }
 }

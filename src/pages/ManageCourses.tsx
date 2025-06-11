@@ -20,7 +20,7 @@ const ManageCourses = () => {
     ciudad: "",
     concesionario: "",
     empresa: "",
-    tipo: "",
+    categoria: "", // Cambiado de tipo a categoria
   });
 
   // Cargar cursos reales desde la API
@@ -28,13 +28,12 @@ const ManageCourses = () => {
     fetch("http://localhost:5214/api/courses")
       .then(res => res.json())
       .then(data => {
-        // Ajusta los nombres según lo que devuelve tu backend
         const mapped = data.map((course: any) => ({
           id: course.id,
           title: course.nombre || course.title,
           instructor: course.profesor || course.instructor,
           coverImage: course.imagenUrl || course.coverImage,
-          category: course.categoria || course.category,
+          category: course.categoria || course.category, // Asegúrate de que esto sea correcto
           students: course.estudiantes || course.students,
           startDate: course.fechaInicio || course.startDate,
           status: course.estado || course.status,
@@ -43,12 +42,20 @@ const ManageCourses = () => {
           ciudad: course.ciudad,
           concesionario: course.concesionario,
           empresa: course.empresa,
-          tipo: course.tipo,
+          categoria: course.categoria || course.category, // Nuevo campo para filtro
         }));
         setCourses(mapped);
       })
       .catch(err => console.error(err));
   }, []);
+
+  // Obtén los valores únicos para los selects desde courses
+  const countries = [...new Set(courses.map(c => c.pais).filter(Boolean))];
+  const regions = [...new Set(courses.map(c => c.region).filter(Boolean))];
+  const cities = [...new Set(courses.map(c => c.ciudad).filter(Boolean))];
+  const dealerships = [...new Set(courses.map(c => c.concesionario).filter(Boolean))];
+  const companies = [...new Set(courses.map(c => c.empresa).filter(Boolean))];
+  const categories = [...new Set(courses.map(c => c.categoria).filter(Boolean))]; // <-- Cambiado aquí
 
   // Filtrar cursos igual que hacías con allCourses
   const filteredCourses = courses.filter(course => {
@@ -62,17 +69,10 @@ const ManageCourses = () => {
       (filters.ciudad ? course.ciudad === filters.ciudad : true) &&
       (filters.concesionario ? course.concesionario === filters.concesionario : true) &&
       (filters.empresa ? course.empresa === filters.empresa : true) &&
-      (filters.tipo ? course.tipo === filters.tipo : true);
+      (filters.categoria && filters.categoria !== "all" ? course.categoria === filters.categoria : true);
 
     return matchesSearch && matchesFilters;
   });
-
-  // Obtén los valores únicos para los selects desde courses
-  const countries = [...new Set(courses.map(c => c.pais).filter(Boolean))];
-  const regions = [...new Set(courses.map(c => c.region).filter(Boolean))];
-  const cities = [...new Set(courses.map(c => c.ciudad).filter(Boolean))];
-  const dealerships = [...new Set(courses.map(c => c.concesionario).filter(Boolean))];
-  const companies = [...new Set(courses.map(c => c.empresa).filter(Boolean))];
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({
@@ -88,17 +88,36 @@ const ManageCourses = () => {
       ciudad: "",
       concesionario: "",
       empresa: "",
-      tipo: "",
+      categoria: "",
     });
     setSearchQuery("");
   };
 
-  const handleDeleteCourse = (id: string) => {
-    // In a real app, you would call your API to delete the course
-    toast({
-      title: "Curso eliminado",
-      description: "El curso ha sido eliminado correctamente.",
-    });
+  const handleDeleteCourse = async (id: string) => {
+    try {
+      const res = await fetch(`http://localhost:5214/api/courses/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setCourses(prev => prev.filter(course => course.id !== id));
+        toast({
+          title: "Curso eliminado",
+          description: "El curso ha sido eliminado correctamente.",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudo eliminar el curso.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al eliminar el curso.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -222,17 +241,17 @@ const ManageCourses = () => {
           <div className="flex items-center gap-2">
             <Briefcase className="h-4 w-4 text-muted-foreground" />
             <Select 
-              value={filters.tipo} 
-              onValueChange={(value) => handleFilterChange("tipo", value)}
+              value={filters.categoria} 
+              onValueChange={(value) => handleFilterChange("categoria", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Tipo" />
+                <SelectValue placeholder="Categoría" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los tipos</SelectItem>
-                <SelectItem value="tecnico">Técnico</SelectItem>
-                <SelectItem value="asesor">Asesor</SelectItem>
-                <SelectItem value="ventas">Ventas</SelectItem>
+                <SelectItem value="all">Todas las categorías</SelectItem>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>{category}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
