@@ -1,4 +1,3 @@
-
 import MainLayout from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -90,126 +89,128 @@ const Calendar = () => {
           </Button>
         </div>
 
-        <Tabs defaultValue="month">
-          <div className="flex justify-between items-center mb-4">
-            <TabsList>
-              <TabsTrigger value="today">Hoy</TabsTrigger>
-              <TabsTrigger value="week">Semana</TabsTrigger>
-              <TabsTrigger value="month">Mes</TabsTrigger>
-            </TabsList>
-            
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <CalendarIcon className="h-4 w-4 mr-2" />
-                Mayo 2025
-              </Button>
-              <div className="space-x-1">
-                <Button variant="outline" size="icon">
-                  &lt;
-                </Button>
-                <Button variant="outline" size="icon">
-                  &gt;
-                </Button>
+        {/* Cambia aquí: layout en dos columnas */}
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Calendario más pequeño */}
+          <div className="flex-1 max-w-xl">
+            <Tabs defaultValue="month">
+              <div className="flex justify-between items-center mb-4">
+                <TabsList>
+                  <TabsTrigger value="today">Hoy</TabsTrigger>
+                  <TabsTrigger value="week">Semana</TabsTrigger>
+                  <TabsTrigger value="month">Mes</TabsTrigger>
+                </TabsList>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm">
+                    <CalendarIcon className="h-4 w-4 mr-2" />
+                    Mayo 2025
+                  </Button>
+                  <div className="space-x-1">
+                    <Button variant="outline" size="icon">
+                      &lt;
+                    </Button>
+                    <Button variant="outline" size="icon">
+                      &gt;
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
+              <TabsContent value="today" className="space-y-4">
+                <Card className="text-sm">
+                  <CardHeader>
+                    <CardTitle className="text-base">Eventos de Hoy</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {getTodayEvents().length > 0 ? (
+                      <div className="space-y-3">
+                        {getTodayEvents().map(event => (
+                          <div key={event.id} className={`p-2 rounded border-l-4 ${getEventColor(event.type)} border-l-blue-500`}>
+                            <div className="font-medium">{event.title}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {event.course} • {new Date(event.date).toLocaleDateString()}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 text-muted-foreground text-xs">
+                        No hay eventos programados para hoy
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="week" className="space-y-4">
+                <Card className="text-sm">
+                  <CardHeader>
+                    <CardTitle className="text-base">Eventos de esta Semana</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {getWeekEvents().length > 0 ? (
+                      <div className="space-y-3">
+                        {getWeekEvents().map(event => (
+                          <div key={event.id} className={`p-2 rounded border-l-4 ${getEventColor(event.type)} border-l-blue-500`}>
+                            <div className="font-medium">{event.title}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {event.course} • {new Date(event.date).toLocaleDateString()}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 text-muted-foreground text-xs">
+                        No hay eventos programados para esta semana
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="month">
+                <Card className="text-sm">
+                  <CardHeader>
+                    <CardTitle className="text-base">Mayo 2025</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-7 gap-1">
+                      <div className="text-center font-medium p-1">Dom</div>
+                      <div className="text-center font-medium p-1">Lun</div>
+                      <div className="text-center font-medium p-1">Mar</div>
+                      <div className="text-center font-medium p-1">Mié</div>
+                      <div className="text-center font-medium p-1">Jue</div>
+                      <div className="text-center font-medium p-1">Vie</div>
+                      <div className="text-center font-medium p-1">Sáb</div>
+                      {/* Espacios vacíos para el inicio del mes */}
+                      <div className="border p-1 h-16 opacity-50"></div>
+                      <div className="border p-1 h-16 opacity-50"></div>
+                      {/* Días del mes */}
+                      {generateMonthCalendar()}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
-        
-          <TabsContent value="today" className="space-y-4">
-            <Card>
+          {/* Próximos eventos al lado y más pequeño */}
+          <div className="w-full md:w-80 flex-shrink-0">
+            <Card className="text-sm">
               <CardHeader>
-                <CardTitle className="text-lg">Eventos de Hoy</CardTitle>
+                <CardTitle className="text-base">Próximos Eventos</CardTitle>
               </CardHeader>
               <CardContent>
-                {getTodayEvents().length > 0 ? (
-                  <div className="space-y-3">
-                    {getTodayEvents().map(event => (
-                      <div key={event.id} className={`p-3 rounded border-l-4 ${getEventColor(event.type)} border-l-blue-500`}>
-                        <div className="font-medium">{event.title}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {event.course} • {new Date(event.date).toLocaleDateString()}
-                        </div>
+                <div className="space-y-2">
+                  {events.map(event => (
+                    <div key={event.id} className={`p-2 rounded border-l-4 ${getEventColor(event.type)} border-l-blue-500`}>
+                      <div className="font-medium">{event.title}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {event.course} • {new Date(event.date).toLocaleDateString()}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No hay eventos programados para hoy
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="week" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Eventos de esta Semana</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {getWeekEvents().length > 0 ? (
-                  <div className="space-y-3">
-                    {getWeekEvents().map(event => (
-                      <div key={event.id} className={`p-3 rounded border-l-4 ${getEventColor(event.type)} border-l-blue-500`}>
-                        <div className="font-medium">{event.title}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {event.course} • {new Date(event.date).toLocaleDateString()}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No hay eventos programados para esta semana
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="month">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Mayo 2025</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-7 gap-1">
-                  <div className="text-center font-medium p-2">Dom</div>
-                  <div className="text-center font-medium p-2">Lun</div>
-                  <div className="text-center font-medium p-2">Mar</div>
-                  <div className="text-center font-medium p-2">Mié</div>
-                  <div className="text-center font-medium p-2">Jue</div>
-                  <div className="text-center font-medium p-2">Vie</div>
-                  <div className="text-center font-medium p-2">Sáb</div>
-                  
-                  {/* Espacios vacíos para el inicio del mes (si es necesario) */}
-                  <div className="border p-2 h-24 opacity-50"></div>
-                  <div className="border p-2 h-24 opacity-50"></div>
-                  
-                  {/* Días del mes */}
-                  {generateMonthCalendar()}
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Próximos Eventos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {events.map(event => (
-                <div key={event.id} className={`p-3 rounded border-l-4 ${getEventColor(event.type)} border-l-blue-500`}>
-                  <div className="font-medium">{event.title}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {event.course} • {new Date(event.date).toLocaleDateString()}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </MainLayout>
   );
