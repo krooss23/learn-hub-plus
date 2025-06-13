@@ -92,8 +92,8 @@ const CreateCourseForm = () => {
           title: "Curso creado",
           description: "El curso ha sido creado exitosamente",
         });
-        // Redirige a la lista de cursos
-        navigate("/courses");
+        // Redirige a la gestión de cursos
+        navigate("/manage-courses");
       })
       .catch(() => {
         setIsLoading(false);
