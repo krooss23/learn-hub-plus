@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/components/ui/use-toast";
 import { CalendarIcon, UploadIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 const CreateCourseForm = () => {
   const [title, setTitle] = useState("");
@@ -16,7 +16,6 @@ const CreateCourseForm = () => {
   const [category, setCategory] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [schedule, setSchedule] = useState("");
   const [professor, setProfessor] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -44,7 +43,6 @@ const CreateCourseForm = () => {
           nombre: c.nombre
         }))
       ));
-    // Cambia aquí el endpoint para imágenes del sistema
     fetch("http://localhost:5214/api/upload")
       .then(res => res.json())
       .then(data => setSystemImages(data));
@@ -118,7 +116,6 @@ const CreateCourseForm = () => {
         empresaId: company,
         fechaInicio: startDate,
         fechaTermino: endDate,
-        horario: schedule,
         profesor: professor,
         imagenUrl,
       }),
@@ -144,10 +141,9 @@ const CreateCourseForm = () => {
 
   const openImageModal = async () => {
     setShowImageModal(true);
-    // Llama a tu API para obtener imágenes guardadas
     const res = await fetch("http://localhost:5214/api/upload");
     const images = await res.json();
-    setSystemImages(images); // images debe ser un array de URLs
+    setSystemImages(images);
   };
 
   return (
@@ -171,7 +167,6 @@ const CreateCourseForm = () => {
               required
             />
           </div>
-          
           <div className="space-y-2">
             <Label htmlFor="description">Descripción *</Label>
             <Textarea
@@ -183,7 +178,6 @@ const CreateCourseForm = () => {
               required
             />
           </div>
-          
           <div className="space-y-2">
             <Label htmlFor="category">Categoría *</Label>
             <Select
@@ -241,18 +235,15 @@ const CreateCourseForm = () => {
                       return;
                     }
                     try {
-                      // Log para depuración
-                      console.log("Enviando categoría:", { nombre: trimmed });
                       const res = await fetch("http://localhost:5214/api/categories", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(trimmed), // Solo el string, no un objeto
+                        body: JSON.stringify(trimmed),
                       });
                       if (!res.ok) {
                         const msg = await res.text();
                         throw new Error(msg);
                       }
-                      // Recarga categorías desde el backend
                       const catsRes = await fetch("http://localhost:5214/api/categories");
                       const cats = await catsRes.json();
                       setCategories(cats);
@@ -289,7 +280,6 @@ const CreateCourseForm = () => {
               <p className="text-sm text-muted-foreground mt-1">No hay categorías registradas</p>
             )}
           </div>
-          
           <div className="space-y-2">
             <Label htmlFor="company">Empresa *</Label>
             <Select
@@ -311,7 +301,6 @@ const CreateCourseForm = () => {
               <p className="text-sm text-muted-foreground mt-1">No hay empresas registradas</p>
             )}
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="startDate">Fecha de Inicio</Label>
@@ -325,7 +314,6 @@ const CreateCourseForm = () => {
                 <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               </div>
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="endDate">Fecha de Término</Label>
               <div className="relative">
@@ -339,18 +327,6 @@ const CreateCourseForm = () => {
               </div>
             </div>
           </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="schedule">Horario</Label>
-            <Input
-              id="schedule"
-              type="text"
-              placeholder="Ej: Lunes y Miércoles, 15:00-17:00"
-              value={schedule}
-              onChange={(e) => setSchedule(e.target.value)}
-            />
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="professor">Nombre de Profesor</Label>
             <Input
@@ -361,7 +337,6 @@ const CreateCourseForm = () => {
               onChange={(e) => setProfessor(e.target.value)}
             />
           </div>
-          
           <div className="space-y-2">
             <Label htmlFor="image">Imagen de Portada</Label>
             <div className="flex flex-col gap-4">
@@ -386,7 +361,6 @@ const CreateCourseForm = () => {
                   className="hidden"
                 />
               </div>
-              
               {imagePreview && (
                 <div className="relative h-40 w-full max-w-md border rounded-md overflow-hidden">
                   <img
@@ -398,10 +372,9 @@ const CreateCourseForm = () => {
               )}
             </div>
           </div>
-          
           <div className="pt-4">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-primary hover:bg-primary/90"
               disabled={isLoading}
             >
@@ -415,12 +388,14 @@ const CreateCourseForm = () => {
           * Campos obligatorios
         </p>
       </CardFooter>
-
       {/* Modal para seleccionar o subir imagen */}
       <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Selecciona o sube una imagen</DialogTitle>
+            <DialogDescription>
+              Puedes elegir una imagen existente o subir una nueva desde tu computadora.
+            </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             {/* Imágenes del sistema */}
@@ -443,6 +418,26 @@ const CreateCourseForm = () => {
             />
           </div>
           <DialogFooter>
+            <Button
+              variant="destructive"
+              disabled={!selectedSystemImage}
+              onClick={async () => {
+                if (!selectedSystemImage) return;
+                await fetch("http://localhost:5214/api/upload", {
+                  method: "DELETE",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ url: selectedSystemImage }),
+                });
+                // Actualiza la lista de imágenes
+                const res = await fetch("http://localhost:5214/api/upload");
+                const images = await res.json();
+                setSystemImages(images);
+                setSelectedSystemImage(null);
+                toast({ title: "Imagen eliminada" });
+              }}
+            >
+              Borrar imagen
+            </Button>
             <Button
               onClick={() => {
                 if (selectedSystemImage) {
