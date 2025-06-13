@@ -266,8 +266,8 @@ const ManageCourses = () => {
           <Card key={course.id} className="overflow-hidden">
             <CardContent className="p-0">
               <div className="flex flex-col md:flex-row">
-                <div className="md:w-48 h-40 relative">
-                  {/* Imagen con fallback */}
+                <div className="md:w-48 h-40 relative flex items-center justify-center">
+                  {/* Imagen centrada con fallback */}
                   <img
                     src={course.coverImage || course.imagenUrl || "/placeholder.jpg"}
                     alt={course.title}
