@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/components/ui/use-toast";
 import { CalendarIcon, UploadIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const CreateCourseForm = () => {
   const [title, setTitle] = useState("");
@@ -27,6 +28,9 @@ const CreateCourseForm = () => {
   const [company, setCompany] = useState(""); // Aquí guardarás el id
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [systemImages, setSystemImages] = useState<string[]>([]);
+  const [selectedSystemImage, setSelectedSystemImage] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:5214/api/categories")
@@ -36,17 +40,21 @@ const CreateCourseForm = () => {
       .then(res => res.json())
       .then(data => setCompanies(
         data.map((c: any) => ({
-          id: String(c.id), // <-- Fuerza a string aquí
+          id: String(c.id),
           nombre: c.nombre
         }))
       ));
+    // Cambia aquí el endpoint para imágenes del sistema
+    fetch("http://localhost:5214/api/upload")
+      .then(res => res.json())
+      .then(data => setSystemImages(data));
   }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setImageFile(file);
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -67,7 +75,7 @@ const CreateCourseForm = () => {
 
     if (!res.ok) return null;
     const data = await res.json();
-    return data.url; 
+    return data.url;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,6 +104,8 @@ const CreateCourseForm = () => {
         });
         return;
       }
+    } else if (selectedSystemImage) {
+      imagenUrl = selectedSystemImage;
     }
 
     fetch("http://localhost:5214/api/courses", {
@@ -110,7 +120,7 @@ const CreateCourseForm = () => {
         fechaTermino: endDate,
         horario: schedule,
         profesor: professor,
-        imagenUrl, // Aquí va la URL de la imagen subida
+        imagenUrl,
       }),
     })
       .then(res => {
@@ -130,6 +140,14 @@ const CreateCourseForm = () => {
           variant: "destructive",
         });
       });
+  };
+
+  const openImageModal = async () => {
+    setShowImageModal(true);
+    // Llama a tu API para obtener imágenes guardadas
+    const res = await fetch("http://localhost:5214/api/upload");
+    const images = await res.json();
+    setSystemImages(images); // images debe ser un array de URLs
   };
 
   return (
@@ -351,7 +369,7 @@ const CreateCourseForm = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => document.getElementById("image")?.click()}
+                  onClick={openImageModal}
                   className="cursor-pointer"
                 >
                   <UploadIcon className="h-4 w-4 mr-2" />
@@ -397,6 +415,48 @@ const CreateCourseForm = () => {
           * Campos obligatorios
         </p>
       </CardFooter>
+
+      {/* Modal para seleccionar o subir imagen */}
+      <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Selecciona o sube una imagen</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4">
+            {/* Imágenes del sistema */}
+            <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+              {systemImages.map(url => (
+                <img
+                  key={url}
+                  src={url}
+                  alt="Imagen del sistema"
+                  className={`w-24 h-24 object-cover rounded cursor-pointer border ${selectedSystemImage === url ? "border-primary" : "border-gray-200"}`}
+                  onClick={() => setSelectedSystemImage(url)}
+                />
+              ))}
+            </div>
+            {/* Opción para cargar nueva imagen */}
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                if (selectedSystemImage) {
+                  setImagePreview(selectedSystemImage);
+                  setImageFile(null); // Si seleccionas del sistema, no subes nuevo archivo
+                }
+                setShowImageModal(false);
+              }}
+            >
+              Usar imagen seleccionada
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

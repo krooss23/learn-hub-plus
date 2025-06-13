@@ -32,4 +32,18 @@ public class UploadController : ControllerBase
         var url = $"{Request.Scheme}://{Request.Host}/uploads/{fileName}";
         return Ok(new { url });
     }
+
+    [HttpGet]
+    public IActionResult GetImages()
+    {
+        var uploads = Path.Combine(_env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot"), "uploads");
+        if (!Directory.Exists(uploads))
+            return Ok(new List<string>());
+
+        var files = Directory.GetFiles(uploads)
+            .Select(f => $"{Request.Scheme}://{Request.Host}/uploads/{Path.GetFileName(f)}")
+            .ToList();
+
+        return Ok(files);
+    }
 }
