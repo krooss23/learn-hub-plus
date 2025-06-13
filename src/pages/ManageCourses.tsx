@@ -43,7 +43,7 @@ const ManageCourses = () => {
           ciudad: course.ciudad,
           concesionario: course.concesionario,
           empresa: course.empresa,
-          empresaNombre: course.empresaNombre, // <-- AGREGA ESTA LÍNEA
+          empresaNombre: course.empresaNombre, 
           categoria: course.categoria || course.category, 
         }));
         setCourses(mapped);

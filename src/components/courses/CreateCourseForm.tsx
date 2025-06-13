@@ -32,10 +32,14 @@ const CreateCourseForm = () => {
     fetch("http://localhost:5214/api/categories")
       .then(res => res.json())
       .then(data => setCategories(data));
-    // Cambia el endpoint y mapea los datos
     fetch("http://localhost:5214/api/empresas")
       .then(res => res.json())
-      .then(data => setCompanies(data.map((c: any) => ({ id: c.id, nombre: c.nombre }))));
+      .then(data => setCompanies(
+        data.map((c: any) => ({
+          id: String(c.id), // <-- Fuerza a string aquí
+          nombre: c.nombre
+        }))
+      ));
   }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
