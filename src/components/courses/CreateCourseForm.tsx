@@ -56,7 +56,21 @@ const CreateCourseForm = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("http://localhost:5214/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.url; 
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title || !description || !category || !company) {
@@ -70,6 +84,20 @@ const CreateCourseForm = () => {
 
     setIsLoading(true);
 
+    let imagenUrl = "";
+    if (imageFile) {
+      imagenUrl = await uploadImage(imageFile) || "";
+      if (!imagenUrl) {
+        setIsLoading(false);
+        toast({
+          title: "Error",
+          description: "No se pudo subir la imagen",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     fetch("http://localhost:5214/api/courses", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,12 +105,12 @@ const CreateCourseForm = () => {
         nombre: title,
         descripcion: description,
         categoria: category,
-        empresaId: company, // Usa el id aquí
+        empresaId: company,
         fechaInicio: startDate,
         fechaTermino: endDate,
         horario: schedule,
         profesor: professor,
-        // imagenUrl: aquí puedes poner la URL si implementas subida de imágenes
+        imagenUrl, // Aquí va la URL de la imagen subida
       }),
     })
       .then(res => {
@@ -92,7 +120,6 @@ const CreateCourseForm = () => {
           title: "Curso creado",
           description: "El curso ha sido creado exitosamente",
         });
-        // Redirige a la gestión de cursos
         navigate("/manage-courses");
       })
       .catch(() => {

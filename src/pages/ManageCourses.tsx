@@ -268,10 +268,10 @@ const ManageCourses = () => {
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-48 h-40 relative">
                   {/* Imagen con fallback */}
-                  <img 
-                    src={course.coverImage || "/images/INClogo.png"} 
+                  <img
+                    src={course.coverImage || course.imagenUrl || "/placeholder.jpg"}
                     alt={course.title}
-                    className="w-full h-full object-cover"
+                    className="w-32 h-32 object-cover rounded"
                   />
                   <div className="absolute top-2 right-2">
                     <StatusBadge status={course.status} />

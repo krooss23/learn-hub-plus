@@ -9,7 +9,7 @@ namespace backend_dotnet.Models
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaTermino { get; set; } 
         public string Horario { get; set; } = string.Empty;
-        public string? ImagenUrl { get; set; } // Para guardar la URL de la imagen si la implementas después
+        public string? ImagenUrl { get; set; }
         public string Profesor { get; set; } = string.Empty;
         public List<UserCourse> UserCourses { get; set; } = new();
         public int EmpresaId { get; set; }

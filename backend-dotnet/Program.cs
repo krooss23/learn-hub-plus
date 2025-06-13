@@ -30,7 +30,7 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Esto sirve wwwroot por defecto
+app.UseStaticFiles(); 
 
 app.MapControllers();
 
