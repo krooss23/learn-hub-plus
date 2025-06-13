@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const campos = [
   { name: "nombre", label: "Nombre", type: "text", required: true },
   { name: "textoBienvenida", label: "Texto de bienvenida", type: "textarea" },
-  { name: "logotipo", label: "Logotipo", type: "file" },
+  // El campo logotipo se maneja con modal, no aquí
   { name: "imagenFondoLogin", label: "Imagen de fondo de login", type: "file" },
   { name: "imagenHeader", label: "Imagen para header", type: "file" }
 ];
@@ -17,9 +20,10 @@ export default function EmpresaForm() {
     region: "",
     textoBienvenida: "",
     logotipo: null as File | null,
+    logotipoUrl: "",
     imagenFondoLogin: null as File | null,
     imagenHeader: null as File | null,
-    activo: true, // <-- agrega esta línea
+    activo: true,
   });
   const [paises, setPaises] = useState<string[]>([]);
   const [regiones, setRegiones] = useState<string[]>([]);
@@ -27,6 +31,13 @@ export default function EmpresaForm() {
   const [zonasData, setZonasData] = useState<Record<string, string[]>>({});
   const [zonaEditable, setZonaEditable] = useState(false);
   const navigate = useNavigate();
+
+  // Estados para el modal de logotipo
+  const [showLogoModal, setShowLogoModal] = useState(false);
+  const [systemImages, setSystemImages] = useState<string[]>([]);
+  const [selectedSystemImage, setSelectedSystemImage] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   // Cargar países al montar
   useEffect(() => {
@@ -38,12 +49,10 @@ export default function EmpresaForm() {
   // Cargar regiones y zonas al cambiar país
   useEffect(() => {
     if (form.pais) {
-      // Cargar regiones
       fetch(`http://localhost:5214/api/regiones/${encodeURIComponent(form.pais)}`)
         .then(res => res.ok ? res.json() : [])
         .then(setRegiones);
 
-      // Cargar zonas
       fetch(`http://localhost:5214/api/regiones/${encodeURIComponent(form.pais)}/zonas`)
         .then(res => res.ok ? res.json() : {})
         .then(data => {
@@ -75,6 +84,55 @@ export default function EmpresaForm() {
     }
   }, [form.region, zonasData]);
 
+  // Modal logotipo: abrir y cargar imágenes del sistema
+  const openLogoModal = async () => {
+    setShowLogoModal(true);
+    const res = await fetch("http://localhost:5214/api/upload");
+    const images = await res.json();
+    setSystemImages(images);
+  };
+
+  // Modal logotipo: manejar archivo nuevo
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setLogoFile(file);
+      setSelectedSystemImage(null);
+      setForm(f => ({ ...f, logotipo: file, logotipoUrl: "" }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Modal logotipo: usar imagen seleccionada del sistema
+  const handleUseSelectedLogo = () => {
+    if (selectedSystemImage) {
+      setLogoPreview(selectedSystemImage);
+      setLogoFile(null);
+      setForm(f => ({ ...f, logotipo: null, logotipoUrl: selectedSystemImage }));
+    }
+    setShowLogoModal(false);
+  };
+
+  // Modal logotipo: borrar imagen del sistema
+  const handleDeleteSystemImage = async () => {
+    if (!selectedSystemImage) return;
+    await fetch("http://localhost:5214/api/upload", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: selectedSystemImage }),
+    });
+    // Actualiza la lista de imágenes
+    const res = await fetch("http://localhost:5214/api/upload");
+    const images = await res.json();
+    setSystemImages(images);
+    setSelectedSystemImage(null);
+    setLogoPreview(null);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, files } = e.target as any;
     setForm(f => ({
@@ -92,7 +150,25 @@ export default function EmpresaForm() {
     formData.append("Zona", form.zona);
     formData.append("TextoBienvenida", form.textoBienvenida);
     formData.append("Activo", form.activo ? "true" : "false");
-    if (form.logotipo) formData.append("Logotipo", form.logotipo);
+
+    // Logotipo: si hay archivo, súbelo primero y usa la URL devuelta
+    let logotipoUrl = form.logotipoUrl || "";
+    if (logoFile) {
+      const uploadForm = new FormData();
+      uploadForm.append("file", logoFile);
+      const res = await fetch("http://localhost:5214/api/upload", {
+        method: "POST",
+        body: uploadForm,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        logotipoUrl = data.url;
+      }
+    }
+    if (logotipoUrl) {
+      formData.append("LogotipoUrl", logotipoUrl);
+    }
+
     if (form.imagenFondoLogin) formData.append("ImagenFondoLogin", form.imagenFondoLogin);
     if (form.imagenHeader) formData.append("ImagenHeader", form.imagenHeader);
 
@@ -102,10 +178,8 @@ export default function EmpresaForm() {
     });
 
     if (res.ok) {
-      // Empresa creada correctamente, navega al listado
       navigate("/empresas");
     } else {
-      // Opcional: muestra el error
       const error = await res.text();
       alert("Error al crear empresa: " + error);
     }
@@ -183,42 +257,101 @@ export default function EmpresaForm() {
             Editar zona 
           </label>
         </div>
-        {campos.map(campo =>
-          campo.type === "textarea" ? (
-            <div key={campo.name}>
-              <label className="block text-gray-700 mb-1">{campo.label}</label>
-              <textarea
-                name={campo.name}
-                className="w-full border border-gray-300 rounded px-3 py-2"
-                rows={3}
-                value={form[campo.name as keyof typeof form] as string}
-                onChange={handleChange}
-              />
-            </div>
-          ) : campo.type === "file" ? (
-            <div key={campo.name}>
-              <label className="block text-gray-700 mb-1">{campo.label}</label>
-              <input
-                type="file"
-                name={campo.name}
-                className="w-full"
-                onChange={handleChange}
-              />
-            </div>
-          ) : (
-            <div key={campo.name}>
-              <label className="block text-gray-700 mb-1">{campo.label}</label>
-              <input
-                name={campo.name}
-                className="w-full border border-gray-300 rounded px-3 py-2"
-                value={form[campo.name as keyof typeof form] as string}
-                onChange={handleChange}
-                placeholder={campo.label}
-                required={campo.required}
-              />
-            </div>
-          )
-        )}
+        {/* Nombre */}
+        <div>
+          <label className="block text-gray-700 mb-1">Nombre</label>
+          <input
+            name="nombre"
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            value={form.nombre}
+            onChange={handleChange}
+            placeholder="Nombre"
+            required
+          />
+        </div>
+        {/* Texto de bienvenida */}
+        <div>
+          <label className="block text-gray-700 mb-1">Texto de bienvenida</label>
+          <textarea
+            name="textoBienvenida"
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            rows={3}
+            value={form.textoBienvenida}
+            onChange={handleChange}
+          />
+        </div>
+        {/* Logotipo con modal */}
+        <div>
+          <label className="block text-gray-700 mb-1">Logotipo</label>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={openLogoModal}
+          >
+            Seleccionar o subir logotipo
+          </Button>
+          {logoPreview && (
+            <img
+              src={logoPreview}
+              alt="Vista previa logotipo"
+              className="w-24 h-24 object-contain mt-2"
+            />
+          )}
+        </div>
+        {/* Imagen de fondo de login con mismo estilo */}
+        <div>
+          <label className="block text-gray-700 mb-1">Imagen de fondo de login</label>
+          <label>
+            <Button
+              type="button"
+              variant="outline"
+              asChild
+            >
+              <span>Seleccionar imagen de fondo</span>
+            </Button>
+            <Input
+              type="file"
+              name="imagenFondoLogin"
+              accept="image/*"
+              className="hidden"
+              onChange={handleChange}
+            />
+          </label>
+          {form.imagenFondoLogin && (
+            <span className="block mt-2 text-sm text-gray-600">
+              {typeof form.imagenFondoLogin === "string"
+                ? form.imagenFondoLogin
+                : (form.imagenFondoLogin as File).name}
+            </span>
+          )}
+        </div>
+        {/* Imagen para header con mismo estilo */}
+        <div>
+          <label className="block text-gray-700 mb-1">Imagen para header</label>
+          <label>
+            <Button
+              type="button"
+              variant="outline"
+              asChild
+            >
+              <span>Seleccionar imagen para header</span>
+            </Button>
+            <Input
+              type="file"
+              name="imagenHeader"
+              accept="image/*"
+              className="hidden"
+              onChange={handleChange}
+            />
+          </label>
+          {form.imagenHeader && (
+            <span className="block mt-2 text-sm text-gray-600">
+              {typeof form.imagenHeader === "string"
+                ? form.imagenHeader
+                : (form.imagenHeader as File).name}
+            </span>
+          )}
+        </div>
         <div className="flex gap-3 mt-4">
           <button
             type="submit"
@@ -235,6 +368,49 @@ export default function EmpresaForm() {
           </button>
         </div>
       </form>
+      {/* Modal para seleccionar o subir logotipo */}
+      <Dialog open={showLogoModal} onOpenChange={setShowLogoModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Selecciona o sube un logotipo</DialogTitle>
+            <DialogDescription>
+              Puedes elegir un logotipo existente o subir uno nuevo desde tu computadora.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+              {systemImages.map(url => (
+                <img
+                  key={url}
+                  src={url}
+                  alt="Logotipo del sistema"
+                  className={`w-24 h-24 object-cover rounded cursor-pointer border ${selectedSystemImage === url ? "border-primary" : "border-gray-200"}`}
+                  onClick={() => setSelectedSystemImage(url)}
+                />
+              ))}
+            </div>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleLogoChange}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="destructive"
+              disabled={!selectedSystemImage}
+              onClick={handleDeleteSystemImage}
+            >
+              Borrar imagen
+            </Button>
+            <Button
+              onClick={handleUseSelectedLogo}
+            >
+              Usar logotipo seleccionado
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
