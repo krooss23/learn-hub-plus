@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FlagIcon, MapPinIcon, BuildingOffice2Icon, PencilIcon, LinkIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 interface Empresa {
   id: number;
@@ -23,6 +26,11 @@ export default function EmpresasList() {
   const [allPaises, setAllPaises] = useState<string[]>([]);
   const [allRegiones, setAllRegiones] = useState<string[]>([]);
   const [allZonas, setAllZonas] = useState<string[]>([]);
+  const [showLogoModal, setShowLogoModal] = useState(false);
+  const [systemImages, setSystemImages] = useState<string[]>([]);
+  const [selectedSystemImage, setSelectedSystemImage] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchEmpresas = async () => {
@@ -133,6 +141,51 @@ export default function EmpresasList() {
       method: "DELETE",
     });
     fetchEmpresas(); // Recarga la lista después de borrar
+  };
+
+  const openLogoModal = async () => {
+    setShowLogoModal(true);
+    const res = await fetch("http://localhost:5214/api/upload");
+    const images = await res.json();
+    setSystemImages(images);
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setLogoFile(file);
+      setSelectedSystemImage(null);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUseSelectedLogo = () => {
+    if (selectedSystemImage) {
+      setLogoPreview(selectedSystemImage);
+      setLogoFile(null);
+      setEmpresaEdit(edit => edit ? { ...edit, logotipo: null, logotipoUrl: selectedSystemImage } : edit);
+    } else if (logoFile) {
+      setEmpresaEdit(edit => edit ? { ...edit, logotipo: logoFile, logotipoUrl: "" } : edit);
+    }
+    setShowLogoModal(false);
+  };
+
+  const handleDeleteSystemImage = async () => {
+    if (!selectedSystemImage) return;
+    await fetch("http://localhost:5214/api/upload", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: selectedSystemImage }),
+    });
+    const res = await fetch("http://localhost:5214/api/upload");
+    const images = await res.json();
+    setSystemImages(images);
+    setSelectedSystemImage(null);
+    setLogoPreview(null);
   };
 
   return (
@@ -365,17 +418,31 @@ export default function EmpresasList() {
                 />
                 Activo
               </label>
-              <label className="flex flex-col gap-1">
-                Logotipo
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={ev => {
-                    const file = ev.target.files?.[0] || null;
-                    setEmpresaEdit(edit => edit ? { ...edit, logotipo: file } : edit);
-                  }}
-                />
-              </label>
+              <div>
+                <label className="block text-gray-700 mb-1">Logotipo</label>
+                <label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={openLogoModal}
+                  >
+                    Seleccionar o subir logotipo
+                  </Button>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleLogoChange}
+                  />
+                </label>
+                {logoPreview || empresaEdit?.logotipoUrl ? (
+                  <img
+                    src={logoPreview || (empresaEdit?.logotipoUrl ? `http://localhost:5214${empresaEdit.logotipoUrl}` : "")}
+                    alt="Vista previa logotipo"
+                    className="w-24 h-24 object-contain mt-2"
+                  />
+                ) : null}
+              </div>
               <button
                 type="submit"
                 className="bg-primary text-white px-4 py-2 rounded shadow hover:bg-primary/90 transition"
@@ -383,6 +450,104 @@ export default function EmpresasList() {
                 Guardar cambios
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para selección de logotipo */}
+      {showLogoModal && (
+        <Dialog open={showLogoModal} onOpenChange={setShowLogoModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Selecciona o sube un logotipo</DialogTitle>
+              <DialogDescription>
+                Puedes elegir un logotipo existente o subir uno nuevo desde tu computadora.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+                {systemImages.map(url => (
+                  <img
+                    key={url}
+                    src={url}
+                    alt="Logotipo del sistema"
+                    className={`w-24 h-24 object-cover rounded cursor-pointer border ${selectedSystemImage === url ? "border-primary" : "border-gray-200"}`}
+                    onClick={() => {
+                      setSelectedSystemImage(url);
+                      setLogoPreview(url);
+                      setLogoFile(null);
+                    }}
+                  />
+                ))}
+              </div>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoChange}
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                variant="destructive"
+                disabled={!selectedSystemImage}
+                onClick={() => {
+                  setLogoFile(null);
+                  setLogoPreview(null);
+                  setSelectedSystemImage(null);
+                }}
+              >
+                Borrar imagen
+              </Button>
+              <Button
+                onClick={handleUseSelectedLogo}
+                disabled={!selectedSystemImage && !logoFile}
+              >
+                Usar logotipo seleccionado
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Modal para selección de logotipo del sistema */}
+      {showLogoModal && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md relative animate-fade-in">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700"
+              onClick={() => setShowLogoModal(false)}
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+            <h3 className="text-xl font-bold mb-4">Seleccionar logotipo del sistema</h3>
+            <div className="grid grid-cols-3 gap-4">
+              {systemImages.map((image, idx) => (
+                <div
+                  key={idx}
+                  className={`p-2 rounded-lg cursor-pointer transition-all duration-150 flex items-center justify-center ${selectedSystemImage === image ? "ring-2 ring-primary" : "hover:bg-gray-100"}`}
+                  onClick={() => setSelectedSystemImage(image)}
+                >
+                  <img src={image} alt={`Logotipo del sistema ${idx + 1}`} className="w-full h-auto rounded-md" />
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex gap-2">
+              <Button
+                variant="default" // <-- Cambia aquí
+                onClick={handleUseSelectedLogo}
+                className="flex-1"
+              >
+                Usar logotipo seleccionado
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteSystemImage}
+                className="flex-1"
+                disabled={!selectedSystemImage}
+              >
+                Eliminar logotipo
+              </Button>
+            </div>
           </div>
         </div>
       )}
