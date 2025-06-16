@@ -31,7 +31,7 @@ namespace backend_dotnet.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("backend_dotnet.Models.Course", b =>
@@ -78,7 +78,7 @@ namespace backend_dotnet.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("backend_dotnet.Models.Empresa", b =>
@@ -119,7 +119,7 @@ namespace backend_dotnet.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Empresas");
+                    b.ToTable("Empresas", (string)null);
                 });
 
             modelBuilder.Entity("backend_dotnet.Models.User", b =>
@@ -178,7 +178,7 @@ namespace backend_dotnet.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("backend_dotnet.Models.UserCourse", b =>
@@ -193,7 +193,7 @@ namespace backend_dotnet.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("UserCourses");
+                    b.ToTable("UserCourses", (string)null);
                 });
 
             modelBuilder.Entity("backend_dotnet.Models.UserCourse", b =>

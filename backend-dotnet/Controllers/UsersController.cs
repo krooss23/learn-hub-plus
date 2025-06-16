@@ -127,6 +127,25 @@ namespace backend_dotnet.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpPost("empresa/{empresaId}")]
+        public IActionResult CreateUserForEmpresa(int empresaId, [FromBody] User user)
+        {
+            if (_context.Users.Any(u => u.Email == user.Email))
+                return BadRequest(new { message = "El email ya está registrado" });
+
+            user.EmpresaId = empresaId;
+
+            // Busca el nombre de la empresa y lo asigna
+            var empresa = _context.Empresas.FirstOrDefault(e => e.Id == empresaId);
+            user.Empresa = empresa != null ? empresa.Nombre : "";
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+            return Ok(user);
+        }
     }
 
     public class LoginRequest

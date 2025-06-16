@@ -31,8 +31,15 @@ const EmpresaLogin = () => {
     if (res.ok) {
       const data = await res.json();
       localStorage.setItem("token", data.token);
+
+      // Validación: si es estudiante, solo puede entrar a su empresa
       if (data.Rol === "estudiante") {
-        navigate(`/empresas/${empresaId}/estudiante`);
+        if (data.empresaId === Number(empresaId)) {
+          navigate(`/empresas/${empresaId}/estudiante`);
+        } else {
+          setError("No tienes acceso a esta empresa.");
+          return;
+        }
       } else if (data.Rol === "admin") {
         navigate(`/empresas/${empresaId}/dashboard`);
       } else {

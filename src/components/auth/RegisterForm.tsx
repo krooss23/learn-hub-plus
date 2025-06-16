@@ -63,7 +63,8 @@ const RegisterForm = () => {
 
     setIsLoading(true);
 
-    fetch("http://localhost:5214/api/users", {
+    // Cambia la URL y elimina empresaId del body
+    fetch(`http://localhost:5214/api/users/empresa/${empresaId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -74,8 +75,8 @@ const RegisterForm = () => {
         estado: status,
         email: email,
         password: password,
-        rol: role,
-        empresaId: empresaId ? Number(empresaId) : null,
+        rol: role
+       
       }),
     })
       .then(res => {

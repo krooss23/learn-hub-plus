@@ -310,7 +310,14 @@ const Students = () => {
                 return;
               }
               try {
-                const response = await fetch("http://localhost:5214/api/users", {
+                // Busca el objeto de empresa seleccionado para obtener su id
+                const empresaSeleccionada = empresas.find(e => e.nombre === newStudent.empresa);
+                if (!empresaSeleccionada) {
+                  setErrorMsg("Debes seleccionar una empresa válida");
+                  setTimeout(() => setErrorMsg(""), 3000);
+                  return;
+                }
+                const response = await fetch(`http://localhost:5214/api/users/empresa/${empresaSeleccionada.id}`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
@@ -318,13 +325,14 @@ const Students = () => {
                     Apellidos: newStudent.apellidos,
                     Rut: newStudent.rut,
                     Pais: newStudent.pais,
-                    Empresa: newStudent.empresa,
+                    Estado: "activo",
                     Concesionario: newStudent.concesionario,
                     Tipo: newStudent.tipo,
                     SenceNet: newStudent.senceNet,
                     Email: newStudent.email,
                     Password: newStudent.password,
-                    Rol: "estudiante"
+                    Rol: "estudiante",
+                    Usuario: newStudent.email // Usa el email como nombre de usuario
                   }),
                 });
                 if (response.ok) {
