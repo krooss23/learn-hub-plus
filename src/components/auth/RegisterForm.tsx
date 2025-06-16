@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth"; // Agrega esto arriba
 
 const countries = [
   "Chile", "Argentina", "Perú", "Colombia", "México", "España", "Estados Unidos"
@@ -31,6 +33,8 @@ const RegisterForm = () => {
   const [empresaId, setEmpresaId] = useState<string>("");
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user } = useAuth(); // Desestructura el usuario de la autenticación
 
   useEffect(() => {
     fetch("http://localhost:5214/api/empresas")
@@ -101,6 +105,14 @@ const RegisterForm = () => {
         });
       });
   };
+
+  useEffect(() => {
+    if (user && user.rol !== "admin") {
+      navigate("/"); // O la ruta que prefieras
+    }
+  }, [user, navigate]);
+
+  if (!user || user.rol !== "admin") return null;
 
   return (
     <Card className="w-full max-w-4xl mx-auto py-8">
@@ -196,21 +208,23 @@ const RegisterForm = () => {
                 required
               />
             </div>
-            <div className="flex flex-col">
-              <Label htmlFor="empresa">Empresa</Label>
-              <Select value={empresaId} onValueChange={setEmpresaId} required>
-                <SelectTrigger>
-                  <SelectValue placeholder={empresas.length === 0 ? "No hay empresas registradas" : "Selecciona una empresa"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {empresas.map((empresa) => (
-                    <SelectItem key={empresa.id} value={empresa.id.toString()}>
-                      {empresa.nombre}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {user?.rol === "admin" && (
+              <div className="flex flex-col">
+                <Label htmlFor="empresa">Empresa</Label>
+                <Select value={empresaId} onValueChange={setEmpresaId} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder={empresas.length === 0 ? "No hay empresas registradas" : "Selecciona una empresa"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {empresas.map((empresa) => (
+                      <SelectItem key={empresa.id} value={empresa.id.toString()}>
+                        {empresa.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div>
               <Label htmlFor="password">Contraseña</Label>
               <div className="relative">

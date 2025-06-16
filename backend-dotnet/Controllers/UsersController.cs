@@ -42,7 +42,7 @@ namespace backend_dotnet.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+            var user = _context.Users.FirstOrDefault(u => u.Email == request.Email && u.EmpresaId == request.EmpresaId);
 
             // Verifica el usuario y la contraseña cifrada
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
@@ -50,7 +50,7 @@ namespace backend_dotnet.Controllers
                 return Unauthorized(new { message = "Credenciales incorrectas" });
             }
 
-            return Ok(new { user.Id, user.Nombre, user.Email, user.Rol });
+            return Ok(new { user.Id, user.Nombre, user.Email, user.Rol, user.EmpresaId });
         }
 
         [HttpDelete("{id}")]
@@ -133,5 +133,6 @@ namespace backend_dotnet.Controllers
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public int EmpresaId { get; set; } 
     }
 }

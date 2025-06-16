@@ -28,6 +28,8 @@ import EditUser from "./pages/EditUser";
 import Empresas from "./pages/EmpresasList"; 
 import EmpresaForm from "./pages/EmpresaForm"; // Asegúrate de tener este componente
 import EmpresaPublic from "./pages/EmpresaPublic";
+import EmpresasDashboard from "./pages/EmpresasDashboard";
+import EmpresaLogin from "./pages/EmpresaLogin";
 
 const queryClient = new QueryClient();
 
@@ -59,7 +61,7 @@ const App = () => (
             path="/admin-dashboard"
             element={
               <MainLayout>
-                <AdminDashboard />
+                <AdminDashboard empresas={[]} />
               </MainLayout>
             }
           />
@@ -89,6 +91,8 @@ const App = () => (
             }
           />
           <Route path="/empresas/:id/public" element={<EmpresaPublic />} />
+          <Route path="/empresas/:empresaId/login" element={<EmpresaLogin />} />
+          <Route path="/empresas/:empresaId/dashboard" element={<EmpresasDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

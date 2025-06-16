@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduationCapIcon, PlusIcon, UserIcon, UsersIcon, BookIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import React from "react";
 
 const featuredVehicles = [
 	{ name: "Mercedes-Benz", img: "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d" },
@@ -12,7 +13,11 @@ const featuredVehicles = [
 	{ name: "Volvo", img: "https://images.unsplash.com/photo-1502877338535-766e1452684a" }
 ];
 
-const AdminDashboard = () => {
+interface AdminDashboardProps {
+	empresas: any[];
+}
+
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ empresas }) => {
 	// Mock statistics data
 	const stats = {
 		courses: 42,
@@ -21,7 +26,7 @@ const AdminDashboard = () => {
 		completionRate: 78
 	};
 	
-	const [empresas, setEmpresas] = useState([]);
+	const [empresasState, setEmpresas] = useState([]);
 
 	useEffect(() => {
 		fetch("http://localhost:5214/api/empresas")
@@ -115,7 +120,7 @@ const AdminDashboard = () => {
 				</CardHeader>
 				<CardContent>
 					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-						{empresas.map(empresa => (
+						{empresasState.map(empresa => (
 							<Link
 								key={empresa.id}
 								to={`/empresas/${empresa.id}/public`}

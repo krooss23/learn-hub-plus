@@ -4,6 +4,7 @@ type User = {
   id: string;
   name: string;
   rol: "admin" | "profesor" | "estudiante";
+  empresaId?: string; // <-- agrega esta línea
 };
 
 type AuthContextType = {

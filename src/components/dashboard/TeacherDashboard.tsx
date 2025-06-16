@@ -1,11 +1,15 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, FileTextIcon, GraduationCapIcon, PlusIcon, UsersIcon } from "lucide-react";
 import CourseGrid from "../courses/CourseGrid";
+import React from "react";
 
-const TeacherDashboard = () => {
+interface TeacherDashboardProps {
+  empresaId: string;
+}
+
+const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ empresaId }) => {
   // Mock data - would come from API in a real app
   const courses = [
     {

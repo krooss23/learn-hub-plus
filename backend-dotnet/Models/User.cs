@@ -17,6 +17,7 @@ namespace backend_dotnet.Models
         public string Empresa { get; set; } = string.Empty;
         public string Concesionario { get; set; } = string.Empty;
         public string Tipo { get; set; } = string.Empty;
+        public int EmpresaId { get; set; }
 
         // Relación con cursos
         public List<UserCourse> UserCourses { get; set; } = new();

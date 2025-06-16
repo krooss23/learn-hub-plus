@@ -6,19 +6,27 @@ import { Button } from "@/components/ui/button";
 import { PencilIcon, Trash2Icon, PlusIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth"; // Ajusta la ruta si es necesario
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState({ name: "", email: "", role: "todos" });
   const navigate = useNavigate();
+  const { user } = useAuth(); 
 
   useEffect(() => {
     fetch("http://localhost:5214/api/users")
       .then(res => res.json())
       .then(data => {
-        setUsers(data);
+        // Si el usuario es admin global, muestra todos
+        if (user?.rol === "admin") {
+          setUsers(data);
+        } else {
+          // Si es admin de empresa o usuario normal, filtra por empresaId
+          setUsers(data.filter(u => u.empresaId === user?.empresaId));
+        }
       });
-  }, []);
+  }, [user]);
 
   const filteredUsers = users.filter(user =>
     user.nombre.toLowerCase().includes(filter.name.toLowerCase()) &&
