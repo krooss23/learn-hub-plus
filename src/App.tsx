@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -22,7 +22,7 @@ import Profile from "./pages/Profile";
 import Grades from "./pages/Grades";
 import Notifications from "./pages/Notifications";
 import AdminDashboard from './components/dashboard/AdminDashboard';
-import MainLayout from "./components/layout/MainLayout";
+import MainLayout from "@/components/layout/MainLayout";
 import UsersList from "./pages/UserList";
 import EditUser from "./pages/EditUser";
 import Empresas from "./pages/EmpresasList"; 
@@ -30,8 +30,18 @@ import EmpresaForm from "./pages/EmpresaForm"; // Asegúrate de tener este compo
 import EmpresaPublic from "./pages/EmpresaPublic";
 import EmpresasDashboard from "./pages/EmpresasDashboard";
 import EmpresaLogin from "./pages/EmpresaLogin";
+import StudentDashboard from "@/components/dashboard/StudentDashboard";
 
 const queryClient = new QueryClient();
+
+const StudentDashboardWrapper = () => {
+  const { empresaId } = useParams<{ empresaId: string }>();
+  return (
+    <MainLayout>
+      <StudentDashboard empresaId={empresaId || ""} />
+    </MainLayout>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -93,6 +103,10 @@ const App = () => (
           <Route path="/empresas/:id/public" element={<EmpresaPublic />} />
           <Route path="/empresas/:empresaId/login" element={<EmpresaLogin />} />
           <Route path="/empresas/:empresaId/dashboard" element={<EmpresasDashboard />} />
+          <Route
+            path="/empresas/:empresaId/estudiante"
+            element={<StudentDashboardWrapper />}
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
