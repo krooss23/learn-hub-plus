@@ -26,11 +26,12 @@ import MainLayout from "@/components/layout/MainLayout";
 import UsersList from "./pages/UserList";
 import EditUser from "./pages/EditUser";
 import Empresas from "./pages/EmpresasList"; 
-import EmpresaForm from "./pages/EmpresaForm"; // Asegúrate de tener este componente
+import EmpresaForm from "./pages/EmpresaForm"; 
 import EmpresaPublic from "./pages/EmpresaPublic";
 import EmpresasDashboard from "./pages/EmpresasDashboard";
 import EmpresaLogin from "./pages/EmpresaLogin";
 import StudentDashboard from "@/components/dashboard/StudentDashboard";
+import DatosReportes from "./pages/DatosReportes";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +108,7 @@ const App = () => (
             path="/empresas/:empresaId/estudiante"
             element={<StudentDashboardWrapper />}
           />
+          <Route path="/empresas/:empresaId/datos-reportes" element={<DatosReportes />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

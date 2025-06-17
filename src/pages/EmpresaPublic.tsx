@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const CARDS = [
   {
@@ -73,7 +73,8 @@ const CARDS = [
 ];
 
 export default function EmpresaPublic() {
-  const { id } = useParams();
+  const navigate = useNavigate();
+  const { id, empresaId } = useParams();
   const [empresa, setEmpresa] = useState<any>(null);
 
   useEffect(() => {
@@ -106,6 +107,16 @@ export default function EmpresaPublic() {
             )}
             {card.key === "welcome" && (
               <div className="mt-2 text-sm text-gray-700">{empresa.textoBienvenida}</div>
+            )}
+            {card.key === "data" && (
+              <div className="mt-2 text-sm text-gray-700">
+                <button
+                  className="bg-teal-500 text-white rounded-md px-4 py-2 text-sm font-semibold transition duration-200 hover:bg-teal-600"
+                  onClick={() => navigate(`/empresas/${empresaId}/datos-reportes`)}
+                >
+                  Ver Reportes
+                </button>
+              </div>
             )}
           </div>
         ))}
