@@ -1,9 +1,25 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  CartesianGrid, Legend
+} from "recharts";
 import EmpresaNavbar from "@/components/layout/EmpresaNavbar";
 
-type Agrupacion = "dia" | "mes" | "año";
+const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+function getYearsFromCursos(cursosRaw: any[]) {
+  return Array.from(
+    new Set(
+      cursosRaw
+        .map((curso: any) => {
+          const fecha = new Date(curso.fechaInicio);
+          return !isNaN(fecha.getTime()) ? fecha.getFullYear() : null;
+        })
+        .filter(Boolean)
+    )
+  ).sort((a, b) => a - b) as number[];
+}
 
 export default function DatosReportes() {
   const { empresaId } = useParams();
@@ -11,9 +27,9 @@ export default function DatosReportes() {
   const [cursos, setCursos] = useState<number>(0);
   const [profesores, setProfesores] = useState<number>(0);
   const [cursosRaw, setCursosRaw] = useState<any[]>([]);
-  const [cursosAgrupados, setCursosAgrupados] = useState<{ label: string; cursos: number }[]>([]);
-  const [agrupacion, setAgrupacion] = useState<Agrupacion>("mes");
   const [empresa, setEmpresa] = useState<{ nombre: string; logotipoUrl?: string } | null>(null);
+  const [years, setYears] = useState<number[]>([]);
+  const [selectedYears, setSelectedYears] = useState<number[]>([]);
 
   useEffect(() => {
     if (!empresaId) return;
@@ -24,54 +40,51 @@ export default function DatosReportes() {
 
     fetch(`http://localhost:5214/api/empresas/${empresaId}/usuarios`)
       .then(res => res.json())
-      .then(data => setUsuarios(data.length));
+      .then((data: any[]) => setUsuarios(data.length));
 
     fetch(`http://localhost:5214/api/empresas/${empresaId}/cursos`)
       .then(res => res.json())
-      .then(data => {
+      .then((data: any[]) => {
         setCursos(data.length);
         setCursosRaw(data);
+
+        const yearsInData = getYearsFromCursos(data);
+        setYears(yearsInData);
+        setSelectedYears(yearsInData.length ? [yearsInData[yearsInData.length - 1]] : []);
       });
 
     fetch(`http://localhost:5214/api/empresas/${empresaId}/profesores`)
       .then(res => res.json())
-      .then(data => setProfesores(data.length));
+      .then((data: any[]) => setProfesores(data.length));
   }, [empresaId]);
 
-  useEffect(() => {
-    // Agrupa los cursos según la selección
-    if (!cursosRaw.length) return;
-
-    const agrupados: { [key: string]: number } = {};
-    cursosRaw.forEach((curso: any) => {
-      const fecha = new Date(curso.fechaInicio);
-      let label = "";
-      if (agrupacion === "dia") {
-        label = fecha.toLocaleDateString();
-      } else if (agrupacion === "mes") {
-        label = `${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-      } else if (agrupacion === "año") {
-        label = `${fecha.getFullYear()}`;
-      }
-      agrupados[label] = (agrupados[label] || 0) + 1;
+  // Agrupar cursos por mes y año seleccionado
+  const dataPorMes: any[] = MESES.map((mes, idx) => {
+    const obj: any = { mes };
+    years.forEach((year: number) => {
+      obj[year] = cursosRaw.filter((curso: any) => {
+        const fecha = new Date(curso.fechaInicio);
+        return (
+          !isNaN(fecha.getTime()) &&
+          fecha.getFullYear() === year &&
+          fecha.getMonth() === idx
+        );
+      }).length;
     });
+    return obj;
+  });
 
-    // Ordena las etiquetas por fecha
-    const sorted = Object.entries(agrupados)
-      .map(([label, cursos]) => ({ label, cursos }))
-      .sort((a, b) => {
-        if (agrupacion === "año") return Number(a.label) - Number(b.label);
-        if (agrupacion === "mes") {
-          const [ma, ya] = a.label.split("/").map(Number);
-          const [mb, yb] = b.label.split("/").map(Number);
-          return ya !== yb ? ya - yb : ma - mb;
-        }
-        // Para día
-        return new Date(a.label).getTime() - new Date(b.label).getTime();
-      });
+  // Manejar selección de años
+  const handleYearChange = (year: number) => {
+    setSelectedYears(prev =>
+      prev.includes(year)
+        ? prev.filter(y => y !== year)
+        : [...prev, year]
+    );
+  };
 
-    setCursosAgrupados(sorted);
-  }, [cursosRaw, agrupacion]);
+  // Colores para las barras
+  const barColors = ["#2563eb", "#60a5fa", "#818cf8", "#f59e42", "#e11d48", "#10b981", "#fbbf24"];
 
   return (
     <>
@@ -97,25 +110,39 @@ export default function DatosReportes() {
 
         <div className="bg-white rounded shadow p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Cursos creados por {agrupacion}</h2>
-            <select
-              className="border rounded px-2 py-1"
-              value={agrupacion}
-              onChange={e => setAgrupacion(e.target.value as Agrupacion)}
-            >
-              <option value="dia">Día</option>
-              <option value="mes">Mes</option>
-              <option value="año">Año</option>
-            </select>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-semibold">Comparar cursos por año</h2>
+              <span className="ml-4 text-gray-400 font-medium">|</span>
+              <div className="flex gap-2 ml-2">
+                {years.map((year, idx) => (
+                  <label key={year} className="flex items-center gap-1 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={selectedYears.includes(year)}
+                      onChange={() => handleYearChange(year)}
+                    />
+                    <span style={{ color: barColors[idx % barColors.length], fontWeight: 600 }}>{year}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={cursosAgrupados}>
+            <BarChart data={dataPorMes}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" />
+              <XAxis dataKey="mes" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="cursos" fill="#2563eb" />
+              {selectedYears.map((year, idx) => (
+                <Bar
+                  key={year}
+                  dataKey={year.toString()}
+                  fill={barColors[idx % barColors.length]}
+                  name={year.toString()}
+                  radius={[6, 6, 0, 0]}
+                />
+              ))}
             </BarChart>
           </ResponsiveContainer>
         </div>
