@@ -143,5 +143,35 @@ namespace backend_dotnet.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        // Obtener usuarios de la empresa
+        [HttpGet("{empresaId}/usuarios")]
+        public async Task<IActionResult> GetUsuariosDeEmpresa(int empresaId)
+        {
+            var usuarios = await _context.Users
+                .Where(u => u.EmpresaId == empresaId)
+                .ToListAsync();
+            return Ok(usuarios);
+        }
+
+        // Obtener cursos de la empresa
+        [HttpGet("{empresaId}/cursos")]
+        public async Task<IActionResult> GetCursosDeEmpresa(int empresaId)
+        {
+            var cursos = await _context.Courses
+                .Where(c => c.EmpresaId == empresaId)
+                .ToListAsync();
+            return Ok(cursos);
+        }
+
+        // Obtener profesores de la empresa (usuarios con rol "profesor")
+        [HttpGet("{empresaId}/profesores")]
+        public async Task<IActionResult> GetProfesoresDeEmpresa(int empresaId)
+        {
+            var profesores = await _context.Users
+                .Where(u => u.EmpresaId == empresaId && u.Rol == "profesor")
+                .ToListAsync();
+            return Ok(profesores);
+        }
     }
 }

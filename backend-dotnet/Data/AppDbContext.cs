@@ -10,7 +10,7 @@ namespace backend_dotnet.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<UserCourse> UserCourses { get; set; }
-        public DbSet<Empresa> Empresas { get; set; } // <-- Agrega esta línea
+        public DbSet<Empresa> Empresas { get; set; } 
         public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

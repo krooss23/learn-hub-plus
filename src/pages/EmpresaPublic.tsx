@@ -158,7 +158,7 @@ const CARDS = [
 
 export default function EmpresaPublic() {
 	const navigate = useNavigate();
-	const { id, empresaId } = useParams();
+	const { id } = useParams();
 	const [empresa, setEmpresa] = useState<any>(null);
 
 	useEffect(() => {
@@ -208,11 +208,7 @@ export default function EmpresaPublic() {
 								<div className="mt-2 text-sm text-gray-700">
 									<button
 										className="bg-teal-500 text-white rounded-md px-4 py-2 text-sm font-semibold transition duration-200 hover:bg-teal-600"
-										onClick={() =>
-											navigate(
-												`/empresas/${empresaId}/datos-reportes`
-											)
-										}
+										onClick={() => navigate(`/empresas/${id}/datos-reportes`)}
 									>
 										Ver Reportes
 									</button>
