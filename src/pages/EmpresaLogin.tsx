@@ -19,6 +19,7 @@ const EmpresaLogin = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    localStorage.removeItem("token"); // Limpia el token previo
     const res = await fetch("http://localhost:5214/api/users/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -30,8 +31,11 @@ const EmpresaLogin = () => {
     });
     if (res.ok) {
       const data = await res.json();
-      console.log("Login response:", data); // <-- Agrega esta línea
+      console.log("Login response:", data);
       localStorage.setItem("token", data.token);
+
+      // AGREGA ESTA LÍNEA:
+      localStorage.setItem("user", JSON.stringify(data)); // Guarda el usuario completo
 
       // Validación: si es estudiante, solo puede entrar a su empresa
       if (data.rol === "estudiante") {
