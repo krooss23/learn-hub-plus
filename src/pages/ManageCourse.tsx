@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -10,6 +10,7 @@ import CourseInfoForm from "@/components/courses/CourseInfoForm";
 import ModulesManager from "@/components/courses/ModulesManager";
 import AssignmentsManager from "@/components/courses/AssignmentsManager";
 import StudentsTable from "@/components/courses/StudentsTable";
+import { Checkbox } from "@/components/ui/checkbox"; // Asegúrate de tener este componente
 
 const ManageCourse = () => {
   const { id } = useParams();
@@ -20,6 +21,7 @@ const ManageCourse = () => {
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState<any[]>([]);
+  const [attendance, setAttendance] = useState<{ [studentId: string]: boolean }>({});
 
   useEffect(() => {
     // Mock API call to fetch course details
@@ -265,15 +267,16 @@ const ManageCourse = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="basic">
-        <TabsList className="mb-6">
-          <TabsTrigger value="basic">Información básica</TabsTrigger>
+      <Tabs defaultValue="info" className="w-full">
+        <TabsList>
+          <TabsTrigger value="info">Información básica</TabsTrigger>
           <TabsTrigger value="content">Contenido</TabsTrigger>
           <TabsTrigger value="assignments">Tareas</TabsTrigger>
           <TabsTrigger value="students">Estudiantes</TabsTrigger>
+          <TabsTrigger value="attendance">Asistencia</TabsTrigger> {/* Nueva pestaña */}
         </TabsList>
 
-        <TabsContent value="basic">
+        <TabsContent value="info">
           <Card>
             <CardContent className="p-6">
               <CourseInfoForm course={course} setCourse={setCourse} />
@@ -340,6 +343,48 @@ const ManageCourse = () => {
               </table>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="attendance">
+          <h3 className="text-lg font-semibold mb-4">Asistencia</h3>
+          <table className="min-w-full bg-white border">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 border">Alumno</th>
+                <th className="px-4 py-2 border">Asistió</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.map((student) => (
+                <tr key={student.id}>
+                  <td className="px-4 py-2 border">{student.nombre}</td>
+                  <td className="px-4 py-2 border text-center">
+                    <Checkbox
+                      checked={!!attendance[student.id]}
+                      onCheckedChange={(checked) =>
+                        setAttendance((prev) => ({
+                          ...prev,
+                          [student.id]: checked as boolean,
+                        }))
+                      }
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+            onClick={() => {
+              // Aquí puedes enviar la asistencia al backend
+              toast({
+                title: "Asistencia guardada",
+                description: "La asistencia ha sido registrada correctamente.",
+              });
+            }}
+          >
+            Guardar asistencia
+          </button>
         </TabsContent>
       </Tabs>
     </MainLayout>

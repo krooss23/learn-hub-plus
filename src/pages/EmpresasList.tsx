@@ -316,7 +316,7 @@ export default function EmpresasList() {
                   <button
                     className="flex items-center gap-1 px-3 py-1.5 rounded bg-blue-100 text-blue-800 shadow-sm hover:bg-blue-200 transition-all duration-150 active:scale-95"
                     title="Link público"
-                    onClick={() => navigate(`/empresas/${e.id}/login`)}
+                    onClick={() => window.open(`/empresas/${e.id}/login`, "_blank")} // <-- Cambia aquí
                   >
                     <LinkIcon className="w-4 h-4" />
                   </button>
