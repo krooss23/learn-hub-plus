@@ -10,6 +10,14 @@ interface StudentDashboardProps {
 }
 
 const StudentDashboard: React.FC<StudentDashboardProps> = ({ empresaId }) => {
+  // Obtén el usuario desde localStorage
+  const user = React.useMemo(() => {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  }, []);
+
+  const userName = user ? `${user.nombre}${user.apellidos ? " " + user.apellidos : ""}` : "Usuario";
+
   // Mock data - would come from API in a real app
   const courses = [
     {
@@ -64,7 +72,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ empresaId }) => {
       {/* Welcome card */}
       <Card className="bg-gradient-to-r from-kampus-primary to-blue-600 text-white">
         <CardHeader>
-          <CardTitle>¡Bienvenido de vuelta, Miguel!</CardTitle>
+          <CardTitle>¡Bienvenido de vuelta, {userName}!</CardTitle>
           <CardDescription className="text-blue-100">
             Tienes 3 tareas pendientes esta semana
           </CardDescription>
