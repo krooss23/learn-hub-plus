@@ -5,12 +5,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeftIcon, PlusIcon, Trash2Icon, UsersIcon } from "lucide-react";
+import { ArrowLeftIcon, PlusIcon, Trash2Icon, UsersIcon, MoreVertical, Check, X } from "lucide-react";
 import CourseInfoForm from "@/components/courses/CourseInfoForm";
 import ModulesManager from "@/components/courses/ModulesManager";
 import AssignmentsManager from "@/components/courses/AssignmentsManager";
 import StudentsTable from "@/components/courses/StudentsTable";
 import { Checkbox } from "@/components/ui/checkbox"; // Asegúrate de tener este componente
+import { useRef } from "react";
 
 const ManageCourse = () => {
   const { id } = useParams();
@@ -21,7 +22,17 @@ const ManageCourse = () => {
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState<any[]>([]);
-  const [attendance, setAttendance] = useState<{ [studentId: string]: boolean }>({});
+  const [attendance, setAttendance] = useState<{ [studentId: string]: string }>({});
+  const [selected, setSelected] = useState<number[]>([]);
+  const [menuOpen, setMenuOpen] = useState<number | null>(null);
+
+  const attendanceStates = {
+    PRESENT: "Presente",
+    ABSENT: "Ausente",
+    LATE: "Retraso",
+    EARLY_LEAVE: "Salida anticipada",
+    NONE: "Sin marcar",
+  };
 
   useEffect(() => {
     // Mock API call to fetch course details
@@ -228,6 +239,24 @@ const ManageCourse = () => {
     });
   };
 
+  const handleAttendance = (studentId: number, state: string) => {
+    setAttendance((prev) => ({
+      ...prev,
+      [studentId]: state,
+    }));
+  };
+
+  const handleSelect = (studentId: number) => {
+    setSelected((prev) =>
+      prev.includes(studentId) ? prev.filter((id) => id !== studentId) : [...prev, studentId]
+    );
+  };
+
+  const presentCount = Object.values(attendance).filter((v) => v === attendanceStates.PRESENT).length;
+  const absentCount = Object.values(attendance).filter((v) => v === attendanceStates.ABSENT).length;
+  const waitingCount = students.length - presentCount - absentCount;
+  const total = students.length;
+
   if (loading) {
     return (
       <MainLayout>
@@ -346,37 +375,138 @@ const ManageCourse = () => {
         </TabsContent>
 
         <TabsContent value="attendance">
-          <h3 className="text-lg font-semibold mb-4">Asistencia</h3>
+          <div className="flex items-center gap-4 mb-4">
+            <Button variant="outline" size="sm">
+              Pasar Presente ({selected.length})
+            </Button>
+            <div className="flex gap-2">
+              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                {presentCount} Presentes
+              </span>
+              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+                {waitingCount} En espera
+              </span>
+              <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">
+                {absentCount} Ausentes
+              </span>
+              <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded text-xs">
+                {total} Asistencia total
+              </span>
+            </div>
+          </div>
           <table className="min-w-full bg-white border">
             <thead>
               <tr>
-                <th className="px-4 py-2 border">Alumno</th>
-                <th className="px-4 py-2 border">Asistió</th>
+                <th className="px-2 py-2 border">
+                  <input
+                    type="checkbox"
+                    checked={selected.length === students.length}
+                    onChange={() =>
+                      setSelected(selected.length === students.length ? [] : students.map((s) => s.id))
+                    }
+                  />
+                </th>
+                <th className="px-4 py-2 border">NOMBRE</th>
+                <th className="px-4 py-2 border">ESTADO</th>
+                <th className="px-4 py-2 border">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {students.map((student) => (
                 <tr key={student.id}>
-                  <td className="px-4 py-2 border">{student.nombre}</td>
-                  <td className="px-4 py-2 border text-center">
-                    <Checkbox
-                      checked={!!attendance[student.id]}
-                      onCheckedChange={(checked) =>
-                        setAttendance((prev) => ({
-                          ...prev,
-                          [student.id]: checked as boolean,
-                        }))
-                      }
+                  <td className="px-2 py-2 border text-center">
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(student.id)}
+                      onChange={() => handleSelect(student.id)}
                     />
+                  </td>
+                  <td className="px-4 py-2 border">
+                    <div className="font-semibold">{student.nombre}</div>
+                    <div className="text-xs text-gray-500">
+                      Presente el Lun 30 Oct 2023 10:23
+                    </div>
+                  </td>
+                  <td className="px-4 py-2 border text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        className={`p-1 rounded ${attendance[student.id] === attendanceStates.PRESENT ? "bg-green-200" : "bg-gray-100"}`}
+                        onClick={() => handleAttendance(student.id, attendanceStates.PRESENT)}
+                      >
+                        <Check className="w-4 h-4 text-green-700" />
+                      </button>
+                      <button
+                        className={`p-1 rounded ${attendance[student.id] === attendanceStates.ABSENT ? "bg-red-200" : "bg-gray-100"}`}
+                        onClick={() => handleAttendance(student.id, attendanceStates.ABSENT)}
+                      >
+                        <X className="w-4 h-4 text-red-700" />
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-2 border text-center relative">
+                    <button
+                      className="p-1 rounded hover:bg-gray-200"
+                      onClick={() => setMenuOpen(menuOpen === student.id ? null : student.id)}
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+                    {menuOpen === student.id && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10">
+                        <button
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+                          onClick={() => {
+                            // Excluir
+                            setMenuOpen(null);
+                          }}
+                        >
+                          Excluir
+                        </button>
+                        <button
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                          onClick={() => {
+                            handleAttendance(student.id, attendanceStates.ABSENT);
+                            setMenuOpen(null);
+                          }}
+                        >
+                          Pasar ausente
+                        </button>
+                        <button
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                          onClick={() => {
+                            handleAttendance(student.id, attendanceStates.LATE);
+                            setMenuOpen(null);
+                          }}
+                        >
+                          Retraso
+                        </button>
+                        <button
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                          onClick={() => {
+                            handleAttendance(student.id, attendanceStates.EARLY_LEAVE);
+                            setMenuOpen(null);
+                          }}
+                        >
+                          Salida anticipada
+                        </button>
+                        <button
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                          onClick={() => {
+                            // Escribir comentario
+                            setMenuOpen(null);
+                          }}
+                        >
+                          Escribir un comentario
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <button
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+          <Button
+            className="mt-4"
             onClick={() => {
-              // Aquí puedes enviar la asistencia al backend
               toast({
                 title: "Asistencia guardada",
                 description: "La asistencia ha sido registrada correctamente.",
@@ -384,7 +514,7 @@ const ManageCourse = () => {
             }}
           >
             Guardar asistencia
-          </button>
+          </Button>
         </TabsContent>
       </Tabs>
     </MainLayout>
