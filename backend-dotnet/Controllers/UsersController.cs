@@ -103,7 +103,8 @@ namespace backend_dotnet.Controllers
             return Ok(user);
         }
 
-        [HttpPost("{userId}/courses")]
+        // Para asignar cursos (POST)
+        [HttpPost("{userId}/assign-courses")]
         public async Task<IActionResult> AssignCourses(int userId, [FromBody] List<int> courseIds)
         {
             var user = await _context.Users
@@ -145,6 +146,33 @@ namespace backend_dotnet.Controllers
             _context.Users.Add(user);
             _context.SaveChanges();
             return Ok(user);
+        }
+
+        // Para obtener cursos asignados (GET)
+        [HttpGet("{userId}/courses")]
+        public async Task<IActionResult> GetCoursesForUser(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.UserCourses)
+                .ThenInclude(uc => uc.Course)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                return NotFound();
+
+            var courses = user.UserCourses
+                .Where(uc => uc.Course != null)
+                .Select(uc => new {
+                    id = uc.Course!.Id,
+                    nombre = uc.Course!.Nombre,
+                    profesor = uc.Course!.Profesor,
+                    imagenUrl = uc.Course!.ImagenUrl,
+                    categoria = uc.Course!.Categoria,
+                    fechaInicio = uc.Course!.FechaInicio,
+                    horario = uc.Course!.Horario
+                }).ToList();
+
+            return Ok(courses);
         }
     }
 

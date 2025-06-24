@@ -597,7 +597,7 @@ const Students = () => {
               className="bg-primary text-white font-semibold px-6"
               onClick={async () => {
                 if (!assigningStudent) return;
-                await fetch(`http://localhost:5214/api/users/${assigningStudent.id}/courses`, {
+                await fetch(`http://localhost:5214/api/users/${assigningStudent.id}/assign-courses`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(selectedCourses),

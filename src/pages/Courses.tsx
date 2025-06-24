@@ -8,22 +8,22 @@ import { PlusIcon, SearchIcon } from "lucide-react";
 import CourseGrid from "@/components/courses/CourseGrid";
 import { useState, useEffect } from "react";
 
-type CourseGridProps = {
-  courses: any[];
-  role: "estudiante" | "profesor" | "admin";
-  viewMode?: "grid" | "list";
-};
-
 const Courses = () => {
   const [userRole, setUserRole] = useState<"estudiante" | "profesor" | "admin">("estudiante");
   const [courses, setCourses] = useState<any[]>([]);
 
-  // 1. Función para cargar cursos
-  const fetchCourses = () => {
-    fetch("http://localhost:5214/api/courses")
+  // Obtén el usuario desde localStorage
+  const user = (() => {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  })();
+
+  // Función para cargar cursos asignados al estudiante
+  const fetchStudentCourses = () => {
+    if (!user || !user.id) return; // <-- Asegúrate de esto
+    fetch(`http://localhost:5214/api/users/${user.id}/courses`)
       .then(res => res.json())
       .then(data => {
-        // Mapea los datos del backend al formato del frontend
         const mappedCourses = data.map((course: any) => ({
           id: course.id,
           title: course.nombre,
@@ -32,7 +32,25 @@ const Courses = () => {
           category: course.categoria,
           startDate: course.fechaInicio,
           schedule: course.horario,
-          // agrega otros campos si los necesitas
+        }));
+        setCourses(mappedCourses);
+      })
+      .catch(err => console.error(err));
+  };
+
+  // Función para cargar todos los cursos (profesor/admin)
+  const fetchCourses = () => {
+    fetch("http://localhost:5214/api/courses")
+      .then(res => res.json())
+      .then(data => {
+        const mappedCourses = data.map((course: any) => ({
+          id: course.id,
+          title: course.nombre,
+          instructor: course.profesor,
+          coverImage: course.imagenUrl,
+          category: course.categoria,
+          startDate: course.fechaInicio,
+          schedule: course.horario,
         }));
         setCourses(mappedCourses);
       })
@@ -40,8 +58,13 @@ const Courses = () => {
   };
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    if (userRole === "estudiante") {
+      fetchStudentCourses();
+    } else {
+      fetchCourses();
+    }
+    // eslint-disable-next-line
+  }, [userRole]);
 
   // For demonstration purposes, add buttons to switch between roles
   const handleRoleChange = (role: "estudiante" | "profesor" | "admin") => {
