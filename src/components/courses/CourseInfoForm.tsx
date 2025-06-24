@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button"; // <-- Agrega esta línea
+import { Button } from "@/components/ui/button";
 
 interface Props {
   course: any;
@@ -13,12 +13,18 @@ interface Props {
 
 const CourseInfoForm = ({ course, setCourse }: Props) => {
   const [categories, setCategories] = useState<string[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:5214/api/courses/categories")
       .then(res => res.json())
       .then(data => setCategories(data))
       .catch(() => setCategories([]));
+
+    fetch("http://localhost:5214/api/users/teachers")
+      .then(res => res.json())
+      .then(data => setTeachers(data))
+      .catch(() => setTeachers([]));
   }, []);
 
   return (
@@ -42,6 +48,7 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Categoría */}
         <div className="space-y-2">
           <Label htmlFor="category">Categoría</Label>
           <Select
@@ -58,7 +65,7 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
                 Selecciona una categoría
               </SelectItem>
               {categories
-                .filter((cat) => cat && cat !== "") // <-- Filtra vacíos
+                .filter((cat) => cat && cat !== "")
                 .map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
@@ -67,14 +74,31 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
             </SelectContent>
           </Select>
         </div>
+        {/* Instructor */}
         <div className="space-y-2">
           <Label htmlFor="instructor">Instructor</Label>
-          <Input
-            id="instructor"
-            value={course.instructor}
-            onChange={(e) => setCourse({ ...course, instructor: e.target.value })}
-          />
+          <Select
+            value={course.instructor && course.instructor !== "" ? course.instructor : "__placeholder__"}
+            onValueChange={(value) =>
+              setCourse({ ...course, instructor: value === "__placeholder__" ? undefined : value })
+            }
+          >
+            <SelectTrigger id="instructor">
+              <SelectValue placeholder="Selecciona un instructor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__placeholder__" disabled>
+                Selecciona un instructor
+              </SelectItem>
+              {teachers.map((teacher) => (
+                <SelectItem key={teacher.id} value={teacher.nombre}>
+                  {teacher.nombre}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
+        {/* Fecha de inicio */}
         <div className="space-y-2">
           <Label htmlFor="startDate">Fecha de inicio</Label>
           <Input
@@ -84,6 +108,7 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
             onChange={(e) => setCourse({ ...course, startDate: e.target.value })}
           />
         </div>
+        {/* Fecha de fin */}
         <div className="space-y-2">
           <Label htmlFor="endDate">Fecha de fin</Label>
           <Input
@@ -93,6 +118,7 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
             onChange={(e) => setCourse({ ...course, endDate: e.target.value })}
           />
         </div>
+        {/* Horario */}
         <div className="space-y-2">
           <Label htmlFor="schedule">Horario</Label>
           <Input

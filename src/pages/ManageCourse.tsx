@@ -10,9 +10,21 @@ import CourseInfoForm from "@/components/courses/CourseInfoForm";
 import ModulesManager from "@/components/courses/ModulesManager";
 import AssignmentsManager from "@/components/courses/AssignmentsManager";
 import StudentsTable from "@/components/courses/StudentsTable";
-import { Checkbox } from "@/components/ui/checkbox"; // Asegúrate de tener este componente
+import { Checkbox } from "@/components/ui/checkbox";
 import { useRef } from "react";
 import { Check, X, MoreVertical } from "lucide-react";
+
+// Función para convertir fechas a yyyy-MM-dd
+function toInputDate(dateStr: string) {
+  if (!dateStr) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  // Si viene en formato "dd/MM/yyyy" o "dd-MM-yyyy"
+  const [day, month, year] = dateStr.split(/[\/\-]/);
+  if (year && month && day) {
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+  return "";
+}
 
 const attendanceStates = {
   PRESENT: "present",
@@ -26,7 +38,6 @@ const ManageCourse = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Inicialización segura: category: undefined
   const [course, setCourse] = useState<any>({
     title: "",
     description: "",
@@ -74,6 +85,8 @@ const ManageCourse = () => {
       setCourse({
         ...mockCourse,
         category: mockCourse.category && mockCourse.category !== "" ? mockCourse.category : undefined,
+        startDate: toInputDate(mockCourse.startDate),
+        endDate: toInputDate(mockCourse.endDate),
       });
       setLoading(false);
     }, 500);
@@ -87,7 +100,7 @@ const ManageCourse = () => {
     fetch(`http://localhost:5214/api/courses/${id}/students`)
       .then(res => res.json())
       .then(data => setStudents(data))
-      .catch(err => setStudents([]));
+      .catch(() => setStudents([]));
   }, [id]);
 
   const handleSave = () => {
@@ -245,13 +258,20 @@ const ManageCourse = () => {
           <TabsTrigger value="content">Contenido</TabsTrigger>
           <TabsTrigger value="assignments">Tareas</TabsTrigger>
           <TabsTrigger value="students">Estudiantes</TabsTrigger>
-          <TabsTrigger value="attendance">Asistencia</TabsTrigger> {/* Nueva pestaña */}
+          <TabsTrigger value="attendance">Asistencia</TabsTrigger>
         </TabsList>
 
         <TabsContent value="info">
           <Card>
             <CardContent className="p-6">
-              <CourseInfoForm course={course} setCourse={setCourse} />
+              <CourseInfoForm
+                course={{
+                  ...course,
+                  startDate: toInputDate(course.startDate),
+                  endDate: toInputDate(course.endDate),
+                }}
+                setCourse={setCourse}
+              />
             </CardContent>
           </Card>
         </TabsContent>

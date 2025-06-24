@@ -174,6 +174,17 @@ namespace backend_dotnet.Controllers
 
             return Ok(courses);
         }
+
+        [HttpGet("teachers")]
+        public IActionResult GetTeachers()
+        {
+            // Asumiendo que el rol de profesor es "profesor" o "teacher"
+            var teachers = _context.Users
+                .Where(u => u.Rol == "profesor" || u.Rol == "teacher")
+                .Select(u => new { u.Id, u.Nombre, u.Email })
+                .ToList();
+            return Ok(teachers);
+        }
     }
 
     public class LoginRequest
