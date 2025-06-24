@@ -5,44 +5,55 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeftIcon, PlusIcon, Trash2Icon, UsersIcon, MoreVertical, Check, X } from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 import CourseInfoForm from "@/components/courses/CourseInfoForm";
 import ModulesManager from "@/components/courses/ModulesManager";
 import AssignmentsManager from "@/components/courses/AssignmentsManager";
 import StudentsTable from "@/components/courses/StudentsTable";
 import { Checkbox } from "@/components/ui/checkbox"; // Asegúrate de tener este componente
 import { useRef } from "react";
+import { Check, X, MoreVertical } from "lucide-react";
+
+const attendanceStates = {
+  PRESENT: "present",
+  ABSENT: "absent",
+  LATE: "late",
+  EARLY_LEAVE: "early_leave",
+};
 
 const ManageCourse = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // Mock course data
-  const [course, setCourse] = useState<any>(null);
+
+  // Inicialización segura: category: undefined
+  const [course, setCourse] = useState<any>({
+    title: "",
+    description: "",
+    category: undefined,
+    instructor: "",
+    startDate: "",
+    endDate: "",
+    schedule: "",
+    coverImage: "",
+    objectives: [],
+    modules: [],
+    assignments: [],
+  });
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState<any[]>([]);
-  const [attendance, setAttendance] = useState<{ [studentId: string]: string }>({});
+  const [attendance, setAttendance] = useState<{ [studentId: number]: string }>({});
   const [selected, setSelected] = useState<number[]>([]);
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
 
-  const attendanceStates = {
-    PRESENT: "Presente",
-    ABSENT: "Ausente",
-    LATE: "Retraso",
-    EARLY_LEAVE: "Salida anticipada",
-    NONE: "Sin marcar",
-  };
-
   useEffect(() => {
-    // Mock API call to fetch course details
     setTimeout(() => {
       const mockCourse = {
         id,
         title: "Matemáticas Avanzadas",
         instructor: "Carlos Mendoza",
         coverImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        category: "Matemáticas",
+        category: "Matemáticas", // o "" si viene vacío
         progress: 75,
         startDate: "10/05/2025",
         endDate: "30/07/2025",
@@ -54,84 +65,16 @@ const ManageCourse = () => {
           "Implementar métodos numéricos para la solución aproximada de problemas matemáticos complejos",
           "Aplicar técnicas de optimización matemática en contextos prácticos"
         ],
-        modules: [
-          {
-            id: "m1",
-            title: "Introducción al Cálculo Diferencial",
-            lessons: [
-              { id: "l1", title: "Límites y continuidad", type: "video" },
-              { id: "l2", title: "Derivadas: concepto y cálculo", type: "document" },
-              { id: "l3", title: "Aplicaciones de la derivada", type: "quiz" }
-            ]
-          },
-          {
-            id: "m2",
-            title: "Cálculo Integral",
-            lessons: [
-              { id: "l4", title: "La integral definida", type: "video" },
-              { id: "l5", title: "Teorema fundamental del cálculo", type: "video" },
-              { id: "l6", title: "Técnicas de integración", type: "document" }
-            ]
-          },
-          {
-            id: "m3",
-            title: "Ecuaciones Diferenciales",
-            lessons: [
-              { id: "l7", title: "Ecuaciones diferenciales de primer orden", type: "video" },
-              { id: "l8", title: "Ecuaciones diferenciales de segundo orden", type: "document" },
-              { id: "l9", title: "Aplicaciones en física e ingeniería", type: "quiz" }
-            ]
-          }
-        ],
-        assignments: [
-          {
-            id: "a1",
-            title: "Tarea: Límites y derivadas",
-            dueDate: "25/05/2025",
-            maxGrade: 100
-          },
-          {
-            id: "a2",
-            title: "Ejercicios: Aplicaciones de derivadas",
-            dueDate: "10/06/2025",
-            maxGrade: 100
-          },
-          {
-            id: "a3",
-            title: "Proyecto: Modelado con ecuaciones diferenciales",
-            dueDate: "30/06/2025",
-            maxGrade: 100
-          }
-        ],
-        students: [
-          {
-            id: 1,
-            name: "Ana Martínez",
-            email: "ana.martinez@example.com",
-            progress: 80
-          },
-          {
-            id: 2,
-            name: "Carlos López",
-            email: "carlos.lopez@example.com",
-            progress: 65
-          },
-          {
-            id: 3,
-            name: "María Rodríguez",
-            email: "maria.rodriguez@example.com",
-            progress: 90
-          },
-          {
-            id: 4,
-            name: "Juan Pérez",
-            email: "juan.perez@example.com",
-            progress: 75
-          }
-        ]
+        modules: [],
+        assignments: [],
+        students: [],
       };
-      
-      setCourse(mockCourse);
+
+      // Nunca permitir ""
+      setCourse({
+        ...mockCourse,
+        category: mockCourse.category && mockCourse.category !== "" ? mockCourse.category : undefined,
+      });
       setLoading(false);
     }, 500);
   }, [id]);
