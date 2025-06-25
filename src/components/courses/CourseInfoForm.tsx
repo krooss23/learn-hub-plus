@@ -20,6 +20,7 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
   const [selectedSystemImage, setSelectedSystemImage] = useState<string | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(course.coverImage || null);
+  const [companies, setCompanies] = useState<any[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:5214/api/courses/categories")
@@ -31,6 +32,12 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
       .then(res => res.json())
       .then(data => setTeachers(data))
       .catch(() => setTeachers([]));
+
+    // Cargar empresas
+    fetch("http://localhost:5214/api/empresas")
+      .then(res => res.json())
+      .then(data => setCompanies(data))
+      .catch(() => setCompanies([]));
   }, []);
 
   // Cargar imágenes del sistema al abrir modal
@@ -153,6 +160,30 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
               {teachers.map((teacher) => (
                 <SelectItem key={teacher.id} value={teacher.nombre}>
                   {teacher.nombre}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {/* Empresa */}
+        <div className="space-y-2">
+          <Label htmlFor="empresa">Empresa</Label>
+          <Select
+            value={course.empresaId ? String(course.empresaId) : "__placeholder__"}
+            onValueChange={(value) =>
+              setCourse({ ...course, empresaId: value === "__placeholder__" ? undefined : Number(value) })
+            }
+          >
+            <SelectTrigger id="empresa">
+              <SelectValue placeholder="Selecciona una empresa" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__placeholder__" disabled>
+                Selecciona una empresa
+              </SelectItem>
+              {companies.map((company) => (
+                <SelectItem key={company.id} value={String(company.id)}>
+                  {company.nombre}
                 </SelectItem>
               ))}
             </SelectContent>
