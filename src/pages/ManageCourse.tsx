@@ -13,11 +13,15 @@ import StudentsTable from "@/components/courses/StudentsTable";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRef } from "react";
 import { Check, X, MoreVertical } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 // Función para convertir fechas a yyyy-MM-dd
 function toInputDate(dateStr: string) {
   if (!dateStr) return "";
+  // Si ya está en formato yyyy-MM-dd
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  // Si viene en formato ISO con hora
+  if (/^\d{4}-\d{2}-\d{2}T/.test(dateStr)) return dateStr.slice(0, 10);
   // Si viene en formato "dd/MM/yyyy" o "dd-MM-yyyy"
   const [day, month, year] = dateStr.split(/[\/\-]/);
   if (year && month && day) {
@@ -58,38 +62,26 @@ const ManageCourse = () => {
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      const mockCourse = {
-        id,
-        title: "Matemáticas Avanzadas",
-        instructor: "Carlos Mendoza",
-        coverImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        category: "Matemáticas", // o "" si viene vacío
-        progress: 75,
-        startDate: "10/05/2025",
-        endDate: "30/07/2025",
-        schedule: "Lun, Mié 15:00-17:00",
-        description: "Este curso cubre temas avanzados de matemáticas incluyendo cálculo diferencial e integral, ecuaciones diferenciales y análisis numérico. Está diseñado para estudiantes con conocimientos previos de álgebra y trigonometría.",
-        objectives: [
-          "Dominar los conceptos fundamentales del cálculo diferencial e integral",
-          "Resolver ecuaciones diferenciales aplicadas a problemas reales",
-          "Implementar métodos numéricos para la solución aproximada de problemas matemáticos complejos",
-          "Aplicar técnicas de optimización matemática en contextos prácticos"
-        ],
-        modules: [],
-        assignments: [],
-        students: [],
-      };
-
-      // Nunca permitir ""
-      setCourse({
-        ...mockCourse,
-        category: mockCourse.category && mockCourse.category !== "" ? mockCourse.category : undefined,
-        startDate: toInputDate(mockCourse.startDate),
-        endDate: toInputDate(mockCourse.endDate),
-      });
-      setLoading(false);
-    }, 500);
+    fetch(`http://localhost:5214/api/courses/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        setCourse({
+          ...data,
+          // Mapea correctamente los nombres de campos del backend
+          title: data.Nombre || data.nombre || data.title || "",
+          description: data.Descripcion || data.descripcion || data.description || "",
+          category: data.Categoria || data.category || "",
+          instructor: data.Instructor || data.instructor || "",
+          startDate: toInputDate(data.startDate || data.fechaInicio || data.FechaInicio),
+          endDate: toInputDate(data.endDate || data.fechaTermino || data.FechaTermino),
+          schedule: data.Horario || data.schedule || "",
+          objectives: Array.isArray(data.objectives) ? data.objectives : [],
+          modules: Array.isArray(data.modules) ? data.modules : [],
+          assignments: Array.isArray(data.assignments) ? data.assignments : [],
+        });
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [id]);
 
   useEffect(() => {

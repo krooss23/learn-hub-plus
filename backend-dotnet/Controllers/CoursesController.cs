@@ -88,5 +88,16 @@ namespace backend_dotnet.Controllers
                 .ToList();
             return Ok(categories);
         }
+
+        [HttpGet("{id}")]
+        public IActionResult GetCourseById(int id)
+        {
+            var course = _context.Courses.FirstOrDefault(c => c.Id == id);
+            if (course == null)
+                return NotFound();
+
+            // Si necesitas incluir relaciones, usa .Include(...)
+            return Ok(course);
+        }
     }
 }

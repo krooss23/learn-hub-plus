@@ -93,7 +93,7 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
         <Label htmlFor="title">Título del curso</Label>
         <Input
           id="title"
-          value={course.title}
+          value={course.title || ""}
           onChange={(e) => setCourse({ ...course, title: e.target.value })}
           required
         />
@@ -211,7 +211,7 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
       <div className="space-y-2">
         <Label>Objetivos del curso</Label>
         <div className="space-y-2">
-          {course.objectives.map((objective: string, index: number) => (
+          {(course.objectives || []).map((objective: string, index: number) => (
             <div key={index} className="flex gap-2">
               <Input
                 value={objective}
