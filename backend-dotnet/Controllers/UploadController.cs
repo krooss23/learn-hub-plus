@@ -70,4 +70,60 @@ public class UploadController : ControllerBase
     {
         public string? Url { get; set; }
     }
+
+    // SUBIR portada
+    [HttpPost("portada")]
+    public async Task<IActionResult> UploadPortada([FromForm] IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(new { error = "No file uploaded" });
+
+        var portadas = Path.Combine(_env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot"), "uploads", "portadas");
+        if (!Directory.Exists(portadas))
+            Directory.CreateDirectory(portadas);
+
+        var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+        var filePath = Path.Combine(portadas, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var url = $"{Request.Scheme}://{Request.Host}/uploads/portadas/{fileName}";
+        return Ok(new { url });
+    }
+
+    // LISTAR portadas
+    [HttpGet("portada")]
+    public IActionResult GetPortadas()
+    {
+        var portadas = Path.Combine(_env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot"), "uploads", "portadas");
+        if (!Directory.Exists(portadas))
+            return Ok(new List<string>());
+
+        var files = Directory.GetFiles(portadas)
+            .Select(f => $"{Request.Scheme}://{Request.Host}/uploads/portadas/{Path.GetFileName(f)}")
+            .ToList();
+
+        return Ok(files);
+    }
+
+    // BORRAR portada
+    [HttpDelete("portada")]
+    public IActionResult DeletePortada([FromBody] DeleteImageRequest request)
+    {
+        if (string.IsNullOrEmpty(request.Url))
+            return BadRequest(new { error = "No URL provided" });
+
+        var fileName = Path.GetFileName(new Uri(request.Url).LocalPath);
+        var portadas = Path.Combine(_env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot"), "uploads", "portadas");
+        var filePath = Path.Combine(portadas, fileName);
+
+        if (!System.IO.File.Exists(filePath))
+            return NotFound(new { error = "File not found" });
+
+        System.IO.File.Delete(filePath);
+        return Ok(new { message = "Image deleted" });
+    }
 }

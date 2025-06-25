@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 interface Props {
   course: any;
@@ -14,6 +15,11 @@ interface Props {
 const CourseInfoForm = ({ course, setCourse }: Props) => {
   const [categories, setCategories] = useState<string[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
+  const [showCoverModal, setShowCoverModal] = useState(false);
+  const [systemImages, setSystemImages] = useState<string[]>([]);
+  const [selectedSystemImage, setSelectedSystemImage] = useState<string | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(course.coverImage || null);
 
   useEffect(() => {
     fetch("http://localhost:5214/api/courses/categories")
@@ -26,6 +32,60 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
       .then(data => setTeachers(data))
       .catch(() => setTeachers([]));
   }, []);
+
+  // Cargar imágenes del sistema al abrir modal
+  const openCoverModal = async () => {
+    setShowCoverModal(true);
+    const res = await fetch("http://localhost:5214/api/upload/portada"); // <-- Cambia aquí
+    const images = await res.json();
+    setSystemImages(images);
+  };
+
+  // Manejar archivo nuevo (subida de portada)
+  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setCoverFile(file);
+      setSelectedSystemImage(null);
+
+      // Subir la imagen a la carpeta de portadas
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("http://localhost:5214/api/upload/portada", {
+        method: "POST",
+        body: formData,
+      });
+      const url = await res.text(); // O res.json() según tu backend
+      setCourse((prev: any) => ({ ...prev, coverImage: url }));
+      setCoverPreview(url);
+    }
+  };
+
+  // Usar imagen seleccionada del sistema
+  const handleUseSelectedCover = () => {
+    if (selectedSystemImage) {
+      setCoverPreview(selectedSystemImage);
+      setCoverFile(null);
+      setCourse((prev: any) => ({ ...prev, coverImage: selectedSystemImage }));
+    }
+    setShowCoverModal(false);
+  };
+
+  // Borrar imagen del sistema
+  const handleDeleteSystemImage = async () => {
+    if (!selectedSystemImage) return;
+    await fetch("http://localhost:5214/api/upload/portada", { // <-- Cambia aquí
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: selectedSystemImage }),
+    });
+    // Actualiza la lista de imágenes
+    const res = await fetch("http://localhost:5214/api/upload/portada"); // <-- Cambia aquí
+    const images = await res.json();
+    setSystemImages(images);
+    setSelectedSystemImage(null);
+    setCoverPreview(null);
+  };
 
   return (
     <div className="grid grid-cols-1 gap-6">
@@ -132,16 +192,20 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
       <div>
         <Label htmlFor="coverImage">Imagen de portada</Label>
         <div className="mt-2 flex flex-col gap-4">
-          <img
-            src={course.coverImage}
-            alt={course.title}
-            className="h-40 w-full object-cover rounded-md"
-          />
-          <Input
-            id="coverImage"
-            type="file"
-            accept="image/*"
-          />
+          {coverPreview && (
+            <img
+              src={coverPreview}
+              alt="Vista previa portada"
+              className="h-40 w-full object-cover rounded-md"
+            />
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={openCoverModal}
+          >
+            Seleccionar o subir imagen de portada
+          </Button>
         </div>
       </div>
       <div className="space-y-2">
@@ -185,6 +249,50 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
           </Button>
         </div>
       </div>
+
+      {/* Modal para seleccionar o subir imagen de portada */}
+      <Dialog open={showCoverModal} onOpenChange={setShowCoverModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Selecciona o sube una imagen de portada</DialogTitle>
+            <DialogDescription>
+              Puedes elegir una imagen existente o subir una nueva desde tu computadora.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+              {systemImages.map(url => (
+                <img
+                  key={url}
+                  src={url}
+                  alt="Imagen del sistema"
+                  className={`w-24 h-24 object-cover rounded cursor-pointer border ${selectedSystemImage === url ? "border-primary" : "border-gray-200"}`}
+                  onClick={() => setSelectedSystemImage(url)}
+                />
+              ))}
+            </div>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleCoverChange}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="destructive"
+              disabled={!selectedSystemImage}
+              onClick={handleDeleteSystemImage}
+            >
+              Borrar imagen
+            </Button>
+            <Button
+              onClick={handleUseSelectedCover}
+            >
+              Usar imagen seleccionada
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
