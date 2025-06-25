@@ -55,9 +55,9 @@ const CourseInfoForm = ({ course, setCourse }: Props) => {
         method: "POST",
         body: formData,
       });
-      const url = await res.text(); // O res.json() según tu backend
-      setCourse((prev: any) => ({ ...prev, coverImage: url }));
-      setCoverPreview(url);
+      const data = await res.json(); // <--- CAMBIA ESTO
+      setCourse((prev: any) => ({ ...prev, coverImage: data.url }));
+      setCoverPreview(data.url);
     }
   };
 
