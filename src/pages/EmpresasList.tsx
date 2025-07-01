@@ -275,71 +275,74 @@ export default function EmpresasList() {
         {empresasFiltradas.map(e => (
           <div
             key={e.id}
-            className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 flex items-center gap-5 border border-gray-100"
+            className="relative bg-white rounded-3xl shadow-lg p-0 flex flex-col items-center justify-between min-h-[320px] transition-shadow duration-300 border border-gray-100"
+            style={{ overflow: "visible" }}
           >
-            {/* Logo grande a la izquierda */}
-            <div className="flex-shrink-0 flex items-center justify-center bg-white rounded-full border border-gray-200 shadow" style={{ width: 96, height: 96 }}>
+            {/* Botones de acción en columna a la derecha */}
+            <div className="absolute top-6 right-6 flex flex-col gap-3 z-10">
+              <button
+                className="w-10 h-10 flex items-center justify-center rounded-lg bg-yellow-100 hover:bg-yellow-200 transition"
+                title="Editar"
+                onClick={() => handleEdit(e)}
+              >
+                <PencilIcon className="w-5 h-5 text-yellow-700" />
+              </button>
+              <button
+                className="w-10 h-10 flex items-center justify-center rounded-lg bg-blue-100 hover:bg-blue-200 transition"
+                title="Link público"
+                onClick={() => window.open(`/empresas/${e.id}/login`, "_blank")}
+              >
+                <LinkIcon className="w-5 h-5 text-blue-700" />
+              </button>
+              <button
+                className="w-10 h-10 flex items-center justify-center rounded-lg bg-red-100 hover:bg-red-200 transition"
+                title="Borrar"
+                onClick={() => handleDelete(e.id)}
+              >
+                <XMarkIcon className="w-5 h-5 text-red-700" />
+              </button>
+              <button
+                className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+                title="Ir al inicio"
+                onClick={() => window.open(`/empresas/${e.id}/public`, "_blank")}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l9-9 9 9M4 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0h6" />
+                </svg>
+              </button>
+              <span
+                className={`w-10 h-10 flex items-center justify-center rounded-lg ${e.activo ? "bg-green-100" : "bg-gray-200"}`}
+                title={e.activo ? "Activo" : "Inactivo"}
+              >
+                {e.activo ? (
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                  </svg>
+                )}
+              </span>
+            </div>
+            {/* Logo centrado */}
+            <div className="flex items-center justify-center w-full mt-8 mb-4">
               {e.logotipoUrl ? (
                 <img
                   src={`http://localhost:5214${e.logotipoUrl}`}
                   alt={e.nombre}
                   className="object-contain"
-                  style={{ width: 88, height: 88 }}
+                  style={{ width: 200, height: 200 }}
                 />
               ) : (
-                <div className="w-24 h-24 flex items-center justify-center rounded-full bg-gray-200 text-4xl font-bold text-gray-500">
+                <div className="w-44 h-44 flex items-center justify-center rounded-full bg-gray-200 text-6xl font-bold text-gray-500">
                   {e.nombre[0]}
                 </div>
               )}
             </div>
-            {/* Info y acciones */}
-            <div className="flex-1 flex flex-col justify-between h-full">
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="font-bold text-xl text-gray-900">{e.nombre}</div>
-                  <div className="text-sm text-gray-500">{e.pais}</div>
-                  <div className="text-base text-gray-700 mt-1">{e.textoBienvenida}</div>
-                  <span className={`mt-2 inline-block px-3 py-1 rounded-full text-xs font-semibold ${e.activo ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-500"}`}>
-                    {e.activo ? "Activo" : "Inactivo"}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-2 ml-4">
-                  {/* Editar */}
-                  <button
-                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-yellow-100 text-yellow-800 shadow-sm hover:bg-yellow-200 transition-all duration-150 active:scale-95"
-                    title="Editar"
-                    onClick={() => handleEdit(e)}
-                  >
-                    <PencilIcon className="w-4 h-4" />
-                  </button>
-                  {/* Link público (no hace nada) */}
-                  <button
-                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-blue-100 text-blue-800 shadow-sm hover:bg-blue-200 transition-all duration-150 active:scale-95"
-                    title="Link público"
-                    onClick={() => window.open(`/empresas/${e.id}/login`, "_blank")} // <-- Cambia aquí
-                  >
-                    <LinkIcon className="w-4 h-4" />
-                  </button>
-                  {/* Borrar */}
-                  <button
-                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-red-100 text-red-800 shadow-sm hover:bg-red-200 transition-all duration-150 active:scale-95"
-                    title="Borrar"
-                    onClick={() => handleDelete(e.id)}
-                  >
-                    <XMarkIcon className="w-4 h-4" />
-                  </button>
-                  {/* Botón Home (abre link público) */}
-                  <button
-                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-gray-100 text-gray-700 shadow-sm hover:bg-gray-200 transition-all duration-150 active:scale-95"
-                    title="Ir al inicio"
-                    onClick={() => window.open(`/empresas/${e.id}/public`, "_blank")}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l9-9 9 9M4 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0h6" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+            {/* Nombre centrado */}
+            <div className="w-full flex flex-col items-center mb-8">
+              <div className="font-bold text-2xl text-blue-900">{e.nombre}</div>
             </div>
           </div>
         ))}
