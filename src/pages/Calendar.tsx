@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, PlusIcon } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 const Calendar = () => {
   // Datos simulados para el calendario
@@ -13,6 +14,24 @@ const Calendar = () => {
     { id: 4, title: "Webinar: IA en Educación", date: "2025-05-25", course: "Tecnología", type: "webinar" },
     { id: 5, title: "Revisión de Ensayo", date: "2025-05-19", course: "Literatura", type: "assignment" }
   ];
+
+  // Estado para la frase motivacional
+  const [frase, setFrase] = useState<string>("");
+  const [autor, setAutor] = useState<string>("");
+
+  // Efecto para obtener una frase motivacional al cargar el componente
+  useEffect(() => {
+    fetch("http://localhost:5214/api/motivacional/frase") // Cambia aquí el puerto y usa http
+      .then(res => res.json())
+      .then(data => {
+        setFrase(data.frase);
+        setAutor(data.autor);
+      })
+      .catch(() => {
+        setFrase("¡Hoy es un gran día para aprender!");
+        setAutor("");
+      });
+  }, []);
 
   // Función para obtener eventos del día actual
   const getTodayEvents = () => {
@@ -88,7 +107,6 @@ const Calendar = () => {
             Nuevo Evento
           </Button>
         </div>
-
         {/* Cambia aquí: layout en dos columnas */}
         <div className="flex flex-col md:flex-row gap-6">
           {/* Calendario más pequeño */}
@@ -190,8 +208,8 @@ const Calendar = () => {
               </TabsContent>
             </Tabs>
           </div>
-          {/* Próximos eventos al lado y más pequeño */}
-          <div className="w-full md:w-80 flex-shrink-0">
+          {/* Próximos eventos */}
+          <div className="w-full md:w-80 flex-shrink-0 flex flex-col gap-2">
             <Card className="text-sm">
               <CardHeader>
                 <CardTitle className="text-base">Próximos Eventos</CardTitle>
@@ -209,6 +227,19 @@ const Calendar = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
+          {/* Frase motivacional en columna aparte */}
+          <div className="w-full md:w-80 flex-shrink-0 flex flex-col gap-2">
+            {frase && (
+              <div className="w-full flex justify-center mt-2">
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 px-4 py-3 rounded text-yellow-800 text-sm font-medium max-w-xs text-center shadow">
+                  <div>{frase}</div>
+                  {autor && (
+                    <div className="text-xs text-yellow-700 mt-2 font-normal">— {autor}</div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
