@@ -32,6 +32,7 @@ import EmpresasDashboard from "./pages/EmpresasDashboard";
 import EmpresaLogin from "./pages/EmpresaLogin";
 import StudentDashboard from "@/components/dashboard/StudentDashboard";
 import DatosReportes from "./pages/DatosReportes";
+import EmpresaRecursos from "@/pages/EmpresaRecursos";
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,7 @@ const App = () => (
             element={<StudentDashboardWrapper />}
           />
           <Route path="/empresas/:empresaId/datos-reportes" element={<DatosReportes />} />
+          <Route path="/empresas/:id/recursos" element={<EmpresaRecursos />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

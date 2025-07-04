@@ -214,6 +214,16 @@ export default function EmpresaPublic() {
 									</button>
 								</div>
 							)}
+							{card.key === "resources" && (
+								<div className="mt-2 text-sm text-gray-700">
+									<button
+										className="bg-teal-500 text-white rounded-md px-4 py-2 text-sm font-semibold transition duration-200 hover:bg-teal-600"
+										onClick={() => navigate(`/empresas/${id}/recursos`)}
+									>
+										Ver Recursos
+									</button>
+								</div>
+							)}
 						</div>
 					))}
 				</div>
