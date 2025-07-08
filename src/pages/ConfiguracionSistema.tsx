@@ -342,7 +342,13 @@ const ConfiguracionSistema = () => {
               <Button
                 variant="destructive"
                 disabled={!selectedSystemImage}
-                onClick={handleDeleteSystemImage}
+                onClick={async () => {
+                  if (!selectedSystemImage) return;
+                  const confirmDelete = window.confirm("¿Estás seguro de que deseas borrar esta imagen?");
+                  if (confirmDelete) {
+                    await handleDeleteSystemImage();
+                  }
+                }}
               >
                 Borrar imagen
               </Button>
@@ -350,7 +356,7 @@ const ConfiguracionSistema = () => {
                 onClick={handleUseSelectedLogo}
                 disabled={!selectedSystemImage && !logoFile}
               >
-                Usar logotipo seleccionado
+                Usar imagen seleccionada
               </Button>
             </DialogFooter>
           </DialogContent>
