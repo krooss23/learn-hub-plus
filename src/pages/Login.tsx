@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import LoginForm from "@/components/auth/LoginForm";
 
@@ -16,9 +15,8 @@ const Login = () => {
 
       {/* Main content */}
       <main className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md slide-top">
           <LoginForm />
-          
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>
               Al iniciar sesión, aceptas nuestros{" "}
