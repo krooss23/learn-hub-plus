@@ -126,4 +126,32 @@ public class UploadController : ControllerBase
         System.IO.File.Delete(filePath);
         return Ok(new { message = "Image deleted" });
     }
+
+    // Ruta para guardar la portada seleccionada
+    [HttpPost("portada/seleccionada")]
+    public IActionResult SetPortadaSeleccionada([FromBody] SetPortadaSeleccionadaRequest request)
+    {
+        if (string.IsNullOrEmpty(request.Url))
+            return BadRequest(new { error = "No URL provided" });
+
+        var path = Path.Combine(_env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot"), "uploads", "portadas", "seleccionada.txt");
+        System.IO.File.WriteAllText(path, request.Url);
+        return Ok(new { message = "Portada seleccionada guardada" });
+    }
+
+    [HttpGet("portada/seleccionada")]
+    public IActionResult GetPortadaSeleccionada()
+    {
+        var path = Path.Combine(_env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot"), "uploads", "portadas", "seleccionada.txt");
+        if (!System.IO.File.Exists(path))
+            return Ok(new { url = "" });
+
+        var url = System.IO.File.ReadAllText(path);
+        return Ok(new { url });
+    }
+
+    public class SetPortadaSeleccionadaRequest
+    {
+        public string? Url { get; set; }
+    }
 }
