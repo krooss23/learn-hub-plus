@@ -313,17 +313,23 @@ const ConfiguracionSistema = () => {
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
                 {systemImages.map(url => (
-                  <img
+                  <div
                     key={url}
-                    src={url}
-                    alt="Logotipo del sistema"
-                    className={`w-24 h-24 object-cover rounded cursor-pointer border ${selectedSystemImage === url ? "border-primary" : "border-gray-200"}`}
+                    className={`w-24 h-24 rounded overflow-hidden border cursor-pointer flex items-center justify-center ${
+                      selectedSystemImage === url ? "border-primary" : "border-gray-200"
+                    }`}
                     onClick={() => {
                       setSelectedSystemImage(url);
                       setLogoPreview(url);
                       setLogoFile(null);
                     }}
-                  />
+                  >
+                    <img
+                      src={url}
+                      alt="Imagen de portada"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 ))}
               </div>
               <Input

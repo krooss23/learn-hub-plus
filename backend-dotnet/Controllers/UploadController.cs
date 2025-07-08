@@ -98,13 +98,15 @@ public class UploadController : ControllerBase
     [HttpGet("portada")]
     public IActionResult GetPortadas()
     {
-        var portadas = Path.Combine(_env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot"), "uploads", "portadas");
-        if (!Directory.Exists(portadas))
-            return Ok(new List<string>());
+        var folder = Path.Combine(_env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot"), "uploads", "portadas");
+        if (!Directory.Exists(folder))
+            return Ok(new string[0]);
 
-        var files = Directory.GetFiles(portadas)
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        var files = Directory.GetFiles(folder)
+            .Where(f => allowedExtensions.Contains(Path.GetExtension(f).ToLower()))
             .Select(f => $"{Request.Scheme}://{Request.Host}/uploads/portadas/{Path.GetFileName(f)}")
-            .ToList();
+            .ToArray();
 
         return Ok(files);
     }

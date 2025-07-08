@@ -15,19 +15,20 @@ const Login = () => {
 
   return (
     <div
-      className="min-h-screen bg-gray-50 flex flex-col"
+      className="min-h-screen flex flex-col"
       style={
         bgUrl
           ? {
               backgroundImage: `url(${bgUrl})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             }
           : undefined
       }
     >
       {/* Simple header */}
-      <header className="bg-white py-4 border-b">
+      <header className="py-4 border-b bg-transparent">
         <div className="container mx-auto px-4">
           <Link to="/" className="text-2xl font-bold text-primary">
             Aorus INC
