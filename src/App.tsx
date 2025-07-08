@@ -33,6 +33,7 @@ import EmpresaLogin from "./pages/EmpresaLogin";
 import StudentDashboard from "@/components/dashboard/StudentDashboard";
 import DatosReportes from "./pages/DatosReportes";
 import EmpresaRecursos from "@/pages/EmpresaRecursos";
+import ConfiguracionSistema from "./pages/ConfiguracionSistema";
 
 const queryClient = new QueryClient();
 
@@ -111,6 +112,7 @@ const App = () => (
           />
           <Route path="/empresas/:empresaId/datos-reportes" element={<DatosReportes />} />
           <Route path="/empresas/:id/recursos" element={<EmpresaRecursos />} />
+          <Route path="/configuracion-sistema" element={<ConfiguracionSistema />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -8,7 +8,8 @@ import {
   HomeIcon, 
   MessageSquareIcon,
   UsersIcon,
-  X
+  X,
+  Settings as SettingsIcon // Agrega SettingsIcon de lucide-react
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
@@ -107,6 +108,22 @@ const Sidebar = ({ open, setOpen }: SidebarProps) => {
                 </Button>
               </Link>
             ))}
+            {/* Icono de configuración */}
+            <Link to="/configuracion-sistema" onClick={handleItemClick}>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start mb-1",
+                  !open && !isMobile ? "px-2" : "px-3",
+                  isActive("/configuracion-sistema")
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "hover:bg-muted"
+                )}
+              >
+                <SettingsIcon className={cn("h-5 w-5", open ? "mr-2" : "mx-auto")} />
+                {(open || isMobile) && <span>Configuración</span>}
+              </Button>
+            </Link>
           </nav>
         </div>
       </aside>
