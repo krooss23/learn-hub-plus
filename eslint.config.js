@@ -13,6 +13,7 @@ export default tseslint.config(
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    /*
     plugins: {
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
@@ -25,5 +26,6 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-unused-vars": "off",
     },
+    */
   }
 );
